@@ -1,0 +1,679 @@
+// ============================================================================
+// OREPA Backend - System Configuration Model (Mongoose Schema)
+// ============================================================================
+//
+// Purpose:
+//   Manages system-wide configuration settings that can be modified by
+//   Super Admin without requiring code changes or server restarts
+//
+// Features:
+//   - Key-value storage for flexible configuration
+//   - Category-based organization
+//   - Audit trail with lastModifiedBy tracking
+//   - Public/private configuration separation
+//   - Type-flexible values (string, number, boolean, object)
+//
+// Security:
+//   - Only Super Admin can modify configurations
+//   - Sensitive configs marked as private (not exposed to frontend)
+//   - Audit logging of all configuration changes
+//
+// Usage:
+//   const SystemConfig = require('./models/SystemConfig');
+//   const config = await SystemConfig.findOne({ key: 'site_name' });
+//   await SystemConfig.updateConfig('maintenance_mode', true, adminUser);
+//
+// ============================================================================
+
+const mongoose = require('mongoose');
+
+// ============================================================================
+// SYSTEM CONFIG SCHEMA DEFINITION
+// ============================================================================
+
+/**
+ * System Configuration Schema
+ *
+ * Flexible key-value store for system-wide settings
+ * Allows Super Admin to modify configuration without code changes
+ */
+const systemConfigSchema = new mongoose.Schema(
+  {
+    // ========================================================================
+    // CONFIGURATION IDENTIFICATION
+    // ========================================================================
+
+    /**
+     * Configuration Key
+     * - Unique identifier for the configuration setting
+     * - Examples: 'site_name', 'maintenance_mode', 'max_login_attempts'
+     * - Must be unique across all configurations
+     */
+    key: {
+      type: String,
+      required: [true, 'Configuration key is required'],
+      unique: true,
+      trim: true,
+      lowercase: true,                              // Normalize keys to lowercase
+      match: [
+        /^[a-z0-9_]+$/,
+        'Key must only contain lowercase letters, numbers, and underscores',
+      ],
+      index: true,                                  // Index for fast lookups by key
+    },
+
+    /**
+     * Configuration Value
+     * - The actual configuration value
+     * - Can be any type: string, number, boolean, array, object
+     * - Stored as Mixed type for maximum flexibility
+     */
+    value: {
+      type: mongoose.Schema.Types.Mixed,
+      required: [true, 'Configuration value is required'],
+    },
+
+    // ========================================================================
+    // CONFIGURATION METADATA
+    // ========================================================================
+
+    /**
+     * Category
+     * - Groups related configurations together
+     * - Used for organization and filtering in admin UI
+     */
+    category: {
+      type: String,
+      required: true,
+      enum: {
+        values: ['GENERAL', 'SECURITY', 'EMAIL', 'INTEGRATIONS', 'FEATURES', 'PERFORMANCE'],
+        message: '{VALUE} is not a valid category',
+      },
+      default: 'GENERAL',
+      index: true,                                  // Index for category filtering
+    },
+
+    /**
+     * Description
+     * - Human-readable explanation of what this configuration controls
+     * - Helps admins understand the purpose and impact of changing it
+     * - Displayed in admin settings interface
+     */
+    description: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: [500, 'Description cannot exceed 500 characters'],
+    },
+
+    /**
+     * Data Type
+     * - Indicates the expected data type of the value
+     * - Used for validation and proper rendering in admin UI
+     */
+    dataType: {
+      type: String,
+      required: true,
+      enum: ['STRING', 'NUMBER', 'BOOLEAN', 'OBJECT', 'ARRAY'],
+      default: 'STRING',
+    },
+
+    // ========================================================================
+    // VISIBILITY & ACCESS CONTROL
+    // ========================================================================
+
+    /**
+     * Is Public
+     * - Determines if this configuration can be accessed by non-admin users
+     * - Public configs can be fetched by frontend (e.g., site_name, theme settings)
+     * - Private configs are admin-only (e.g., API keys, security settings)
+     */
+    isPublic: {
+      type: Boolean,
+      default: false,                               // Private by default for security
+      index: true,                                  // Index for filtering public configs
+    },
+
+    /**
+     * Is Editable
+     * - Determines if this configuration can be edited through the admin UI
+     * - Some system-critical configs should not be editable (set programmatically only)
+     */
+    isEditable: {
+      type: Boolean,
+      default: true,
+    },
+
+    // ========================================================================
+    // AUDIT TRAIL
+    // ========================================================================
+
+    /**
+     * Last Modified By
+     * - Reference to the admin who last modified this configuration
+     * - Used for accountability and audit trails
+     */
+    lastModifiedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null,
+    },
+
+    /**
+     * Last Modified At
+     * - Timestamp of the last modification
+     * - Automatically updated when configuration changes
+     */
+    lastModifiedAt: {
+      type: Date,
+      default: null,
+    },
+
+    // ========================================================================
+    // VALIDATION (Optional)
+    // ========================================================================
+
+    /**
+     * Validation Rules
+     * - Optional validation constraints for the value
+     * - Examples: min/max for numbers, pattern for strings, allowed values for enums
+     * - Stored as flexible object
+     */
+    validationRules: {
+      type: mongoose.Schema.Types.Mixed,
+      default: null,
+    },
+
+    /**
+     * Default Value
+     * - The original/default value for this configuration
+     * - Used for reset functionality
+     * - Reference for admins to know the recommended value
+     */
+    defaultValue: {
+      type: mongoose.Schema.Types.Mixed,
+      default: null,
+    },
+  },
+  {
+    // ========================================================================
+    // SCHEMA OPTIONS
+    // ========================================================================
+
+    // Automatically add createdAt and updatedAt timestamps
+    timestamps: true,
+
+    // Customize toJSON transformation
+    toJSON: {
+      virtuals: true,
+      transform: function (doc, ret) {
+        // Remove MongoDB internal fields
+        delete ret.__v;
+        return ret;
+      },
+    },
+
+    toObject: {
+      virtuals: true,
+    },
+  }
+);
+
+// ============================================================================
+// INDEXES
+// ============================================================================
+
+// Index for public configuration queries
+// Optimizes frontend requests for public settings
+systemConfigSchema.index({ isPublic: 1, category: 1 });
+
+// ============================================================================
+// STATIC METHODS
+// ============================================================================
+
+/**
+ * Get Configuration by Key Static Method
+ *
+ * Retrieves a specific configuration value by its key
+ * Returns only the value, not the full document
+ *
+ * @param {string} key - Configuration key
+ * @returns {Promise<any>} Configuration value or null if not found
+ *
+ * @example
+ *   const siteName = await SystemConfig.getConfig('site_name');
+ */
+systemConfigSchema.statics.getConfig = async function (key) {
+  const config = await this.findOne({ key: key.toLowerCase() });
+  return config ? config.value : null;
+};
+
+/**
+ * Set Configuration Static Method
+ *
+ * Updates or creates a configuration setting
+ * Records who made the change and when
+ *
+ * @param {string} key - Configuration key
+ * @param {any} value - New configuration value
+ * @param {Object} modifiedBy - Admin user who made the change (optional)
+ * @returns {Promise<SystemConfig>} Updated or created configuration document
+ *
+ * @example
+ *   await SystemConfig.setConfig('maintenance_mode', true, req.user);
+ */
+systemConfigSchema.statics.setConfig = async function (key, value, modifiedBy = null) {
+  const update = {
+    value,
+    lastModifiedAt: new Date(),
+  };
+
+  if (modifiedBy) {
+    update.lastModifiedBy = modifiedBy._id || modifiedBy;
+  }
+
+  // Use findOneAndUpdate with upsert to update existing or create new
+  const config = await this.findOneAndUpdate(
+    { key: key.toLowerCase() },
+    { $set: update },
+    {
+      new: true,                                    // Return updated document
+      upsert: false,                                // Don't create if not exists (for safety)
+      runValidators: true,                          // Run schema validators
+    }
+  );
+
+  if (!config) {
+    throw new Error(`Configuration with key '${key}' not found`);
+  }
+
+  return config;
+};
+
+/**
+ * Get Public Configurations Static Method
+ *
+ * Retrieves all public configurations
+ * Used by frontend to get client-side settings
+ *
+ * @param {string} category - Optional category filter
+ * @returns {Promise<Object>} Object with key-value pairs of public configurations
+ *
+ * @example
+ *   const publicConfigs = await SystemConfig.getPublicConfigs();
+ *   // Returns: { site_name: 'OREPA', site_tagline: '...', ... }
+ */
+systemConfigSchema.statics.getPublicConfigs = async function (category = null) {
+  const query = { isPublic: true };
+
+  if (category) {
+    query.category = category.toUpperCase();
+  }
+
+  const configs = await this.find(query).select('key value').lean();
+
+  // Convert array of configs to key-value object
+  const configObject = {};
+  configs.forEach((config) => {
+    configObject[config.key] = config.value;
+  });
+
+  return configObject;
+};
+
+/**
+ * Get Configurations by Category Static Method
+ *
+ * Retrieves all configurations in a specific category
+ * Used in admin UI to display related settings together
+ *
+ * @param {string} category - Category name
+ * @returns {Promise<SystemConfig[]>} Array of configuration documents
+ *
+ * @example
+ *   const securityConfigs = await SystemConfig.getByCategory('SECURITY');
+ */
+systemConfigSchema.statics.getByCategory = async function (category) {
+  return await this.find({ category: category.toUpperCase() })
+    .sort({ key: 1 })                               // Alphabetical order
+    .populate('lastModifiedBy', 'firstName lastName email')
+    .lean();
+};
+
+/**
+ * Get All Configurations Static Method
+ *
+ * Retrieves all system configurations
+ * Used in admin settings interface
+ *
+ * @param {boolean} editableOnly - Only return editable configurations
+ * @returns {Promise<SystemConfig[]>} Array of all configuration documents
+ *
+ * @example
+ *   const allConfigs = await SystemConfig.getAllConfigs();
+ */
+systemConfigSchema.statics.getAllConfigs = async function (editableOnly = false) {
+  const query = editableOnly ? { isEditable: true } : {};
+
+  return await this.find(query)
+    .sort({ category: 1, key: 1 })
+    .populate('lastModifiedBy', 'firstName lastName email')
+    .lean();
+};
+
+/**
+ * Reset to Default Static Method
+ *
+ * Resets a configuration to its default value
+ * Used for reverting changes
+ *
+ * @param {string} key - Configuration key
+ * @param {Object} modifiedBy - Admin user performing the reset
+ * @returns {Promise<SystemConfig>} Updated configuration document
+ *
+ * @example
+ *   await SystemConfig.resetToDefault('max_login_attempts', req.user);
+ */
+systemConfigSchema.statics.resetToDefault = async function (key, modifiedBy) {
+  const config = await this.findOne({ key: key.toLowerCase() });
+
+  if (!config) {
+    throw new Error(`Configuration with key '${key}' not found`);
+  }
+
+  if (config.defaultValue === null) {
+    throw new Error(`Configuration '${key}' has no default value defined`);
+  }
+
+  config.value = config.defaultValue;
+  config.lastModifiedBy = modifiedBy._id || modifiedBy;
+  config.lastModifiedAt = new Date();
+
+  return await config.save();
+};
+
+/**
+ * Initialize Default Configs Static Method
+ *
+ * Seeds the database with default system configurations
+ * Should be run once during initial setup
+ *
+ * @returns {Promise<number>} Number of configurations created
+ *
+ * @example
+ *   await SystemConfig.initializeDefaults();
+ */
+systemConfigSchema.statics.initializeDefaults = async function () {
+  const defaultConfigs = [
+    // General Settings
+    {
+      key: 'site_name',
+      value: 'OREPA',
+      category: 'GENERAL',
+      description: 'Website name displayed in header and titles',
+      dataType: 'STRING',
+      isPublic: true,
+      isEditable: true,
+      defaultValue: 'OREPA',
+    },
+    {
+      key: 'site_tagline',
+      value: 'Old Royalists Engineering Professionals Association',
+      category: 'GENERAL',
+      description: 'Website tagline or slogan',
+      dataType: 'STRING',
+      isPublic: true,
+      isEditable: true,
+      defaultValue: 'Old Royalists Engineering Professionals Association',
+    },
+    {
+      key: 'maintenance_mode',
+      value: false,
+      category: 'GENERAL',
+      description: 'Enable maintenance mode to prevent user access',
+      dataType: 'BOOLEAN',
+      isPublic: true,
+      isEditable: true,
+      defaultValue: false,
+    },
+    {
+      key: 'contact_email',
+      value: 'info@orepa.com',
+      category: 'GENERAL',
+      description: 'Primary contact email address',
+      dataType: 'STRING',
+      isPublic: true,
+      isEditable: true,
+      defaultValue: 'info@orepa.com',
+    },
+
+    // Security Settings
+    {
+      key: 'user_approval_required',
+      value: true,
+      category: 'SECURITY',
+      description: 'Require admin approval for new user registrations',
+      dataType: 'BOOLEAN',
+      isPublic: false,
+      isEditable: true,
+      defaultValue: true,
+    },
+    {
+      key: 'max_login_attempts',
+      value: 5,
+      category: 'SECURITY',
+      description: 'Maximum failed login attempts before account lockout',
+      dataType: 'NUMBER',
+      isPublic: false,
+      isEditable: true,
+      defaultValue: 5,
+      validationRules: { min: 3, max: 10 },
+    },
+    {
+      key: 'account_lockout_duration',
+      value: 15,
+      category: 'SECURITY',
+      description: 'Account lockout duration in minutes',
+      dataType: 'NUMBER',
+      isPublic: false,
+      isEditable: true,
+      defaultValue: 15,
+      validationRules: { min: 5, max: 60 },
+    },
+    {
+      key: 'jwt_expiration',
+      value: '24h',
+      category: 'SECURITY',
+      description: 'JWT token expiration time (e.g., 24h, 7d)',
+      dataType: 'STRING',
+      isPublic: false,
+      isEditable: true,
+      defaultValue: '24h',
+    },
+    {
+      key: 'password_min_length',
+      value: 8,
+      category: 'SECURITY',
+      description: 'Minimum password length for user accounts',
+      dataType: 'NUMBER',
+      isPublic: false,
+      isEditable: true,
+      defaultValue: 8,
+      validationRules: { min: 6, max: 20 },
+    },
+
+    // Email Settings
+    {
+      key: 'email_enabled',
+      value: true,
+      category: 'EMAIL',
+      description: 'Enable email notifications',
+      dataType: 'BOOLEAN',
+      isPublic: false,
+      isEditable: true,
+      defaultValue: true,
+    },
+    {
+      key: 'email_from_name',
+      value: 'OREPA',
+      category: 'EMAIL',
+      description: 'Sender name for outgoing emails',
+      dataType: 'STRING',
+      isPublic: false,
+      isEditable: true,
+      defaultValue: 'OREPA',
+    },
+
+    // Feature Flags
+    {
+      key: 'newsletter_enabled',
+      value: true,
+      category: 'FEATURES',
+      description: 'Enable newsletter functionality',
+      dataType: 'BOOLEAN',
+      isPublic: true,
+      isEditable: true,
+      defaultValue: true,
+    },
+    {
+      key: 'projects_enabled',
+      value: true,
+      category: 'FEATURES',
+      description: 'Enable projects showcase',
+      dataType: 'BOOLEAN',
+      isPublic: true,
+      isEditable: true,
+      defaultValue: true,
+    },
+    {
+      key: 'lms_enabled',
+      value: true,
+      category: 'FEATURES',
+      description: 'Enable Learning Management System',
+      dataType: 'BOOLEAN',
+      isPublic: true,
+      isEditable: true,
+      defaultValue: true,
+    },
+    {
+      key: 'scholarships_enabled',
+      value: true,
+      category: 'FEATURES',
+      description: 'Enable scholarship listings',
+      dataType: 'BOOLEAN',
+      isPublic: true,
+      isEditable: true,
+      defaultValue: true,
+    },
+  ];
+
+  let createdCount = 0;
+
+  for (const configData of defaultConfigs) {
+    // Check if config already exists
+    const exists = await this.findOne({ key: configData.key });
+
+    if (!exists) {
+      await this.create(configData);
+      createdCount++;
+    }
+  }
+
+  return createdCount;
+};
+
+// ============================================================================
+// INSTANCE METHODS
+// ============================================================================
+
+/**
+ * Validate Value Instance Method
+ *
+ * Validates the configuration value against its validation rules
+ * Returns true if valid, throws error if invalid
+ *
+ * @returns {boolean} True if value is valid
+ *
+ * @example
+ *   const config = await SystemConfig.findOne({ key: 'max_login_attempts' });
+ *   config.value = 15;
+ *   config.validateValue(); // Returns true or throws error
+ */
+systemConfigSchema.methods.validateValue = function () {
+  if (!this.validationRules) {
+    return true;
+  }
+
+  const { min, max, pattern, allowedValues } = this.validationRules;
+
+  // Validate number ranges
+  if (this.dataType === 'NUMBER') {
+    if (min !== undefined && this.value < min) {
+      throw new Error(`Value must be at least ${min}`);
+    }
+    if (max !== undefined && this.value > max) {
+      throw new Error(`Value must be at most ${max}`);
+    }
+  }
+
+  // Validate string patterns
+  if (this.dataType === 'STRING' && pattern) {
+    const regex = new RegExp(pattern);
+    if (!regex.test(this.value)) {
+      throw new Error(`Value does not match required pattern`);
+    }
+  }
+
+  // Validate against allowed values
+  if (allowedValues && !allowedValues.includes(this.value)) {
+    throw new Error(`Value must be one of: ${allowedValues.join(', ')}`);
+  }
+
+  return true;
+};
+
+// ============================================================================
+// PRE-SAVE MIDDLEWARE
+// ============================================================================
+
+/**
+ * Value Validation Middleware
+ *
+ * Validates configuration value before saving
+ * Ensures data integrity and prevents invalid configurations
+ */
+systemConfigSchema.pre('save', function (next) {
+  try {
+    // Validate value if validation rules exist
+    if (this.validationRules) {
+      this.validateValue();
+    }
+
+    // Update lastModifiedAt timestamp
+    if (this.isModified('value')) {
+      this.lastModifiedAt = new Date();
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+// ============================================================================
+// CREATE AND EXPORT MODEL
+// ============================================================================
+
+/**
+ * SystemConfig Model
+ *
+ * Compiled Mongoose model from systemConfigSchema
+ * Provides interface for managing system configurations
+ */
+const SystemConfig = mongoose.model('SystemConfig', systemConfigSchema);
+
+module.exports = SystemConfig;
+
+// ============================================================================
+// END OF SYSTEM CONFIG MODEL
+// ============================================================================

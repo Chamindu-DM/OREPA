@@ -1,0 +1,138 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// Enums
+enum UserRole {
+  USER
+  MEMBER
+  MEMBER_ADMIN
+  CONTENT_ADMIN
+  NEWSLETTER_ADMIN
+  SUPER_ADMIN
+}
+
+enum UserStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+// User Model
+model User {
+  id              String      @id @default(uuid())
+  email           String      @unique
+  password        String
+  firstName       String
+  lastName        String
+  nameWithInitials String
+  dateOfBirth     DateTime
+  address         String
+  country         String      @default("Sri Lanka")
+  phone           String
+
+  // Academic & Professional
+  batch           Int
+  admissionNumber String
+  alShy           String
+  university      String
+  faculty         String
+  universityLevel String
+  engineeringField String
+  orepaSCId       String?
+
+  // Authorization
+  role            UserRole    @default(USER)
+  isAdmin         Boolean     @default(false)
+  status          UserStatus  @default(PENDING)
+
+  // Relations
+  approvedById    String?
+  approvedBy      User?       @relation("UserApprovals", fields: [approvedById], references: [id])
+  approvedUsers   User[]      @relation("UserApprovals")
+
+  adminActionLogs AdminActionLog[] @relation("AdminActions")
+  modifiedConfigs SystemConfig[]
+
+  // Metadata
+  lastLogin       DateTime?
+  loginAttempts   Int         @default(0)
+  accountLockedUntil DateTime?
+  approvalDate    DateTime?
+
+  resetPasswordToken String?
+  resetPasswordExpire DateTime?
+
+  createdById     String?
+  createdBy       User?       @relation("UserCreator", fields: [createdById], references: [id])
+  createdUsers    User[]      @relation("UserCreator")
+
+  profilePicture  String?
+  isEmailVerified Boolean     @default(false)
+  isActive        Boolean     @default(true)
+
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@map("users")
+}
+
+// AdminActionLog Model
+model AdminActionLog {
+  id              String      @id @default(uuid())
+
+  // Admin Info
+  adminId         String
+  admin           User        @relation("AdminActions", fields: [adminId], references: [id])
+  adminEmail      String
+  adminRole       UserRole // Using enum here to match User role type
+
+  // Action Info
+  action          String
+  resourceType    String?
+  resourceId      String?
+  description     String?     @default("")
+
+  // State changes
+  beforeState     Json?
+  afterState      Json?
+
+  // Security
+  ipAddress       String?
+  userAgent       String?
+
+  createdAt       DateTime    @default(now())
+
+  // Note: Mongo schema had expireAfterSeconds index on createdAt if needed for retention policies
+  // Postgres doesn't natively support TTL like Mongo, usually handled by cron/pg_cron
+
+  @@map("admin_action_logs")
+}
+
+// SystemConfig Model
+model SystemConfig {
+  id              String      @id @default(uuid())
+  key             String      @unique
+  value           Json
+  category        String      @default("GENERAL") // Could be an enum if strictly fixed
+  description     String?
+  isPublic        Boolean     @default(false)
+
+  lastModifiedById String?
+  lastModifiedBy   User?      @relation(fields: [lastModifiedById], references: [id])
+
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@map("system_configs")
+}

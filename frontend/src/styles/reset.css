@@ -1,0 +1,15 @@
+@charset "utf-8";
+
+/* https://hankchizljaw.com/wrote/a-modern-css-reset/ */
+*,*::before,*::after {box-sizing: border-box;}
+ul,ol {padding: 0;}
+body,h1,h2,h3,h4,p,ul,ol,li,figure,figcaption,blockquote,dl,dd {margin: 0;}
+ul,ol {list-style: none;}
+a:not([class]) {text-decoration-skip-ink: auto;}
+body {-webkit-text-size-adjust: 100%;}
+table {border-collapse: collapse;}
+input,button,textarea,select {margin: 0;padding: 0;background: none;border: 1px solid #333;border-radius: 0;-webkit-appearance: none;-moz-appearance: none;appearance: none;font: inherit;}
+input[type='radio'] {-webkit-appearance: radio;appearance: radio;}
+input[type='checkbox'] {-webkit-appearance: checkbox;appearance: checkbox;}
+select {-webkit-appearance: auto;appearance: auto;}
+h1,h2,h3,h4,h5,h6 {font-weight: inherit;}
