@@ -232,7 +232,7 @@ export default function Register() {
                             {/* Personal Details */}
                             <h3 style={{ color: '#fff', fontSize: '18px', borderBottom: '1px solid #333', paddingBottom: '10px', marginBottom: '20px' }}>Personal Details</h3>
 
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                            <div className="form_grid">
                                 <div>
                                     <label style={labelStyle}>First Name *</label>
                                     <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} required style={inputStyle} />
@@ -248,7 +248,7 @@ export default function Register() {
                                 <input type="text" name="nameWithInitials" value={formData.nameWithInitials} onChange={handleChange} required style={inputStyle} placeholder="Ex: A.B.C. Perera" />
                             </div>
 
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                            <div className="form_grid">
                                 <div>
                                     <label style={labelStyle}>Phone Number *</label>
                                     <input type="tel" name="phone" value={formData.phone} onChange={handleChange} required style={inputStyle} placeholder="+947xxxxxxxx" />
@@ -272,7 +272,7 @@ export default function Register() {
                             {/* Account Details */}
                             <h3 style={{ color: '#fff', fontSize: '18px', borderBottom: '1px solid #333', paddingBottom: '10px', marginBottom: '20px', marginTop: '20px' }}>Account Credentials</h3>
 
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                            <div className="form_grid">
                                 <div>
                                     <label style={labelStyle}>Email Address *</label>
                                     <input type="email" name="email" value={formData.email} onChange={handleChange} required style={inputStyle} />
@@ -283,7 +283,7 @@ export default function Register() {
                                 </div>
                             </div>
 
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                            <div className="form_grid">
                                 <div>
                                     <label style={labelStyle}>Password *</label>
                                     <input type="password" name="password" value={formData.password} onChange={handleChange} required style={inputStyle} />
@@ -297,7 +297,7 @@ export default function Register() {
                             {/* Academic Details */}
                             <h3 style={{ color: '#fff', fontSize: '18px', borderBottom: '1px solid #333', paddingBottom: '10px', marginBottom: '20px', marginTop: '20px' }}>Academic Details</h3>
 
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                            <div className="form_grid">
                                 <div>
                                     <label style={labelStyle}>Batch of School *</label>
                                     <input type="number" name="batch" value={formData.batch} onChange={handleChange} required style={inputStyle} placeholder="Ex: 2024" />
@@ -317,7 +317,7 @@ export default function Register() {
                                 </select>
                             </div>
 
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                            <div className="form_grid">
                                 <div>
                                     <label style={labelStyle}>University *</label>
                                     <select name="university" value={formData.university} onChange={handleChange} required style={{...inputStyle, background: '#111'}}>

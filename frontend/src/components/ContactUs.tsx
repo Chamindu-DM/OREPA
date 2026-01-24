@@ -18,26 +18,28 @@ export default function ContactUs() {
         if (textWrap) {
             ScrollTrigger.create({
                 trigger: section,
-                start: 'top 70%',
+                start: 'top bottom', // Trigger as soon as it enters viewport
                 onEnter: () => textWrap.classList.add('is_animated'),
             });
         }
 
         // Animate content
         const info = section.querySelector('.jms_info');
-        gsap.fromTo(info,
-            { opacity: 0, y: 30 },
-            {
-                opacity: 1,
-                y: 0,
-                duration: 0.8,
-                delay: 0.3,
-                scrollTrigger: {
-                    trigger: section,
-                    start: 'top 70%',
+        if (info) {
+            gsap.fromTo(info,
+                { opacity: 0, y: 30 },
+                {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    delay: 0.3,
+                    scrollTrigger: {
+                        trigger: section,
+                        start: 'top bottom', // Trigger as soon as it enters viewport
+                    }
                 }
-            }
-        );
+            );
+        }
     }, []);
 
     return (
@@ -79,8 +81,8 @@ export default function ContactUs() {
             </div>
 
             <div className="jms_movie_wrap is_active" style={{ marginTop: '60px' }}>
-                 {/* Visual placeholder without map text */}
-                 <div style={{ width: '100%', height: '100px' }}></div>
+                {/* Visual placeholder without map text */}
+                <div style={{ width: '100%', height: '100px' }}></div>
             </div>
         </section>
     );
