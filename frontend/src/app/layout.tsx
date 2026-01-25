@@ -2,17 +2,20 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "CENTURY Official Website",
-  description: "One of One",
+  title: "Old Royalists' Engineering Professionals' Association (OREPA)",
+  description: "The unified platform for Royal College alumni in the engineering and technological sectors. Bridging the legacy of Reid Avenue with modern industry.",
   openGraph: {
     locale: "en_US",
     type: "website",
-    title: "CENTURY Official Website",
-    description: "One of One",
-    images: ["/images/ogp.jpg"],
+    title: "Old Royalists' Engineering Professionals' Association (OREPA)",
+    description: "The unified platform for Royal College alumni in the engineering and technological sectors.",
+    images: ["/images/hero.png"],
   },
   twitter: {
     card: "summary_large_image",
+    title: "Old Royalists' Engineering Professionals' Association (OREPA)",
+    description: "The unified platform for Royal College alumni in the engineering and technological sectors.",
+    images: ["/images/hero.png"],
   },
   icons: {
     icon: "/favicon.ico",
