@@ -115,7 +115,7 @@ export default function PillarsPage() {
     return (
         <>
             <Header />
-            <Navigation />
+            <Navigation state="normal" />
             <div className="wrapper animation_loaded" ref={pageRef}>
                 <div className="pillars_page">
                     <div className="pillars_hero">
