@@ -2696,6 +2696,7 @@ body {
   min-height: 100vh;
   padding-top: 100px;
   background-color: var(--color-black);
+  overflow-x: hidden;
 }
 
 .pillars_hero {
@@ -2831,6 +2832,7 @@ body {
 @media screen and (max-width: 768px) {
   .pillars_page {
     padding-top: 80px;
+    overflow-x: hidden;
   }
 
   .pillars_hero {
@@ -2848,11 +2850,13 @@ body {
 
   .pillars_container {
     padding: 0 20px 100px;
+    overflow-x: hidden;
   }
 
   .pillar_section {
     margin-bottom: 80px;
     padding-bottom: 60px;
+    overflow-x: hidden;
   }
 
   .pillar_inner {
@@ -2860,15 +2864,21 @@ body {
   }
 
   .pillar_header {
-    gap: 20px;
+    gap: 15px;
+    flex-wrap: wrap;
   }
 
   .pillar_number {
     font-size: 32px;
+    flex-shrink: 0;
   }
 
   .pillar_title {
-    font-size: 28px;
+    font-size: 24px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    flex: 1;
+    min-width: 0;
   }
 
   .pillar_description {
@@ -2914,12 +2924,16 @@ body {
     font-size: 14px;
   }
 
+  .pillar_header {
+    gap: 10px;
+  }
+
   .pillar_title {
-    font-size: 24px;
+    font-size: 20px;
   }
 
   .pillar_number {
-    font-size: 28px;
+    font-size: 24px;
   }
 }
 

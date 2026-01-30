@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Header from '@/components/Header';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
@@ -70,6 +70,12 @@ const pillarsData = [
 export default function PillarsPage() {
     useLenis();
     const pageRef = useRef<HTMLDivElement>(null);
+    const [hasScrolled, setHasScrolled] = useState(false);
+
+    // Show header immediately on mount for pillars page
+    useEffect(() => {
+        setHasScrolled(true);
+    }, []);
 
     useEffect(() => {
         const page = pageRef.current;
@@ -113,11 +119,10 @@ export default function PillarsPage() {
     }, []);
 
     return (
-        <>
+        <div className={`wrapper animation_loaded ${hasScrolled ? 'has-scrolled' : ''}`} ref={pageRef}>
             <Header />
             <Navigation state="normal" />
-            <div className="wrapper animation_loaded" ref={pageRef}>
-                <div className="pillars_page">
+            <div className="pillars_page">
                     <div className="pillars_hero">
                         <h1 className="pillars_hero_title">
                             <span className="text_wrap js_text_wrap" aria-hidden="true">
@@ -174,8 +179,7 @@ export default function PillarsPage() {
                         ))}
                     </div>
                 </div>
-            </div>
             <Footer />
-        </>
+        </div>
     );
 }
