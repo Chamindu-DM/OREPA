@@ -2700,7 +2700,7 @@ body {
 }
 
 .pillars_hero {
-  padding: 80px 40px 100px;
+  padding: 40px 40px 80px;
   text-align: center;
   max-width: 1200px;
   margin: 0 auto;
@@ -2773,24 +2773,38 @@ body {
   opacity: 0;
 }
 
+.pillar_content_grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.pillar_content_left {
+  /* Description column */
+}
+
+.pillar_content_right {
+  /* Co-directors column */
+}
+
 .pillar_description {
   font-size: 16px;
   line-height: 1.8;
   color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 50px;
   font-weight: var(--fw-Light);
 }
 
 .pillar_directors {
-  margin-top: 40px;
-  padding-top: 40px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 0;
+  border-top: none;
+  margin-top: 0;
 }
 
 .pillar_directors_title {
-  font-size: 20px;
+  font-size: 16px;
   color: var(--color-orange);
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   font-weight: var(--fw-Medium);
   text-transform: uppercase;
 }
@@ -2798,15 +2812,17 @@ body {
 .pillar_directors_list {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 30px;
+  gap: 20px;
+  max-width: 400px;
 }
 
 .pillar_director {
-  padding: 25px;
+  padding: 15px;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 4px;
   transition: all 0.3s ease;
+  max-width: 180px;
 }
 
 .pillar_director:hover {
@@ -2814,18 +2830,39 @@ body {
   border-color: rgba(255, 255, 255, 0.2);
 }
 
+.pillar_director_image {
+  position: relative;
+  width: 100%;
+  border-radius: 2px;
+  margin-bottom: 15px;
+  overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.pillar_director_image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: transform 0.5s ease;
+}
+
+.pillar_director:hover .pillar_director_image img {
+  transform: scale(1.05);
+}
+
 .pillar_director_name {
-  font-size: 18px;
+  font-size: 15px;
   color: var(--color-white);
-  margin-bottom: 8px;
+  margin-bottom: 5px;
   font-weight: var(--fw-Medium);
-  min-height: 27px;
 }
 
 .pillar_director_title {
-  font-size: 14px;
+  font-size: 11px;
   color: rgba(255, 255, 255, 0.6);
   font-weight: var(--fw-Light);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 /* Mobile responsive styles for pillars */
@@ -2881,6 +2918,11 @@ body {
     min-width: 0;
   }
 
+  .pillar_content_grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
   .pillar_description {
     font-size: 15px;
     line-height: 1.7;
@@ -2890,6 +2932,7 @@ body {
   .pillar_directors {
     margin-top: 30px;
     padding-top: 30px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .pillar_directors_title {
