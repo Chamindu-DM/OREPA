@@ -150,6 +150,7 @@ export default function PillarsPage() {
             <Header />
             <Navigation state="normal" />
             <div className="pillars_page">
+                    <div className="pillars_page_bg" aria-hidden="true"></div>
                     <div className="pillars_hero">
                         <h1 className="pillars_hero_title">
                             <span className="text_wrap js_text_wrap" aria-hidden="true">
