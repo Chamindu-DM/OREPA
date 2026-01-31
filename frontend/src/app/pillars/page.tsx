@@ -50,7 +50,8 @@ const pillarsData = [
     },
     {
         id: 2,
-        title: 'Information Management & Marketing',
+        title: 'Information Management',
+        titleLine2: '& Marketing',
         description: 'Information Management & Marketing acts as the guardian of OREPA\'s data, and digital presence. This pillar maintains organized records, and systems so that information is accurate, accessible, and secure for the Executive Board and project teams. The team ensures that communication channels such as websites, newsletters, and other online media are consistent with OREPA\'s identity. By managing both information flow and visibility, this pillar helps the entire organization operate efficiently and look professional to the outside world.',
         coDirectors: [
             { name: 'Chamindu Dissanayake', title: 'Co-director', image: '/images/EB Portraits/Chamindu Dissanayake - Co-directors of Information Management & Marketing.jpg' },
@@ -112,14 +113,14 @@ export default function PillarsPage() {
         const pillarSections = page.querySelectorAll('.pillar_section');
 
         pillarSections.forEach((section) => {
-            const textWrap = section.querySelector('.js_text_wrap');
+            const textWraps = section.querySelectorAll('.js_text_wrap');
             const content = section.querySelector('.pillar_content');
 
-            if (textWrap) {
+            if (textWraps.length > 0) {
                 ScrollTrigger.create({
                     trigger: section,
                     start: 'top 70%',
-                    onEnter: () => textWrap.classList.add('is_animated'),
+                    onEnter: () => textWraps.forEach(wrap => wrap.classList.add('is_animated')),
                 });
             }
 
@@ -221,7 +222,14 @@ export default function PillarsPage() {
                                                     <span key={i} className="letter">{letter === ' ' ? '\u00A0' : letter}</span>
                                                 ))}
                                             </span>
-                                            <span className="sr_only">{pillar.title}</span>
+                                            {pillar.titleLine2 && (
+                                                <span className="text_wrap js_text_wrap pillar_title_line2" aria-hidden="true">
+                                                    {pillar.titleLine2.split('').map((letter, i) => (
+                                                        <span key={i} className="letter">{letter === ' ' ? '\u00A0' : letter}</span>
+                                                    ))}
+                                                </span>
+                                            )}
+                                            <span className="sr_only">{pillar.title}{pillar.titleLine2 ? ` ${pillar.titleLine2}` : ''}</span>
                                         </h2>
                                     </div>
                                     <div className="pillar_content">
