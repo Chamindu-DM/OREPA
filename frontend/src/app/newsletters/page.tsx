@@ -29,13 +29,6 @@ const newslettersData: Newsletter[] = [
         date: 'January 2026',
         pdfUrl: '/newsletters/January%202026.pdf',
         coverImage: '/newsletters/covers/January%202026.png'
-    },
-    {
-        id: 2,
-        title: 'OREPA Newsletter - December 2025',
-        date: 'December 2025',
-        pdfUrl: '/newsletters/newsletter-dec-2025.pdf',
-        coverImage: '/newsletters/covers/dec-2025.jpg'
     }
 ];
 
