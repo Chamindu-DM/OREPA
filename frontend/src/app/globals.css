@@ -3608,3 +3608,278 @@ a.contact_card_value:hover {
     font-size: 16px;
   }
 }
+
+/* Events Page Styles */
+.events_page {
+  min-height: 100vh;
+  padding-top: 80px;
+  overflow-x: hidden;
+  position: relative;
+}
+
+.events_page_bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.events_page_bg::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/images/homepage-cover.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.events_page_bg::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.85);
+}
+
+.events_hero,
+.events_container {
+  position: relative;
+  z-index: 1;
+}
+
+.events_hero {
+  padding: 20px 40px 60px;
+  text-align: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.events_hero_title {
+  text-transform: uppercase;
+  color: var(--color-orange);
+  font-size: 60px;
+  font-weight: var(--fw-Light);
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: center;
+}
+
+.events_hero_subtitle {
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: var(--fw-Light);
+}
+
+.events_container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px 150px;
+}
+
+.events_intro {
+  margin-bottom: 80px;
+  text-align: center;
+}
+
+.events_section_title {
+  font-size: 32px;
+  color: var(--color-white);
+  font-weight: var(--fw-Medium);
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.events_intro_text {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: var(--fw-Light);
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+.event_project_section {
+  margin-bottom: 120px;
+  padding-bottom: 80px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.event_project_section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.event_project_inner {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.event_project_header {
+  display: flex;
+  align-items: flex-start;
+  gap: 30px;
+}
+
+.event_project_num {
+  font-size: 48px;
+  color: var(--color-orange);
+  font-weight: var(--fw-Light);
+  opacity: 0.5;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.event_project_title {
+  text-transform: uppercase;
+  color: var(--color-orange);
+  font-size: 36px;
+  font-weight: var(--fw-Medium);
+  margin-bottom: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.event_project_content {
+  opacity: 0;
+}
+
+.event_project_description {
+  margin-bottom: 50px;
+}
+
+.event_project_text {
+  font-size: 16px;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: var(--fw-Light);
+  margin-bottom: 20px;
+}
+
+.event_project_text:last-child {
+  margin-bottom: 0;
+}
+
+.event_project_images {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.event_project_image {
+  border-radius: 8px;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.event_project_image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: transform 0.4s ease;
+}
+
+.event_project_image:hover img {
+  transform: scale(1.03);
+}
+
+.event_project_images_placeholder {
+  padding: 60px 40px;
+  text-align: center;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 16px;
+  font-weight: var(--fw-Light);
+}
+
+/* Responsive Events Page */
+@media screen and (max-width: 992px) {
+  .events_hero_title {
+    font-size: 48px;
+  }
+
+  .event_project_header {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .event_project_num {
+    font-size: 36px;
+  }
+
+  .event_project_title {
+    font-size: 28px;
+  }
+
+  .event_project_images {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .events_page {
+    padding-top: 60px;
+  }
+
+  .events_hero {
+    padding: 20px 20px 40px;
+  }
+
+  .events_hero_title {
+    font-size: 36px;
+  }
+
+  .events_hero_subtitle {
+    font-size: 16px;
+  }
+
+  .events_container {
+    padding: 0 20px 100px;
+  }
+
+  .events_intro {
+    margin-bottom: 60px;
+  }
+
+  .events_section_title {
+    font-size: 24px;
+  }
+
+  .events_intro_text {
+    font-size: 16px;
+  }
+
+  .event_project_section {
+    margin-bottom: 80px;
+    padding-bottom: 60px;
+  }
+
+  .event_project_num {
+    font-size: 28px;
+  }
+
+  .event_project_title {
+    font-size: 24px;
+  }
+
+  .event_project_text {
+    font-size: 15px;
+  }
+
+  .event_project_images {
+    grid-template-columns: 1fr;
+  }
+}

@@ -10,7 +10,7 @@ export default function Header() {
     const navItems = [
         { name: 'Home', path: '/' },
         { name: 'Pillars', path: '/pillars' },
-        { name: 'Events', path: '/#history' },
+        { name: 'Events', path: '/events' },
         { name: 'Newsletters', path: '/newsletters' },
         { name: 'LMS', path: '/lms' },
         { name: 'Contact', path: '/#contact' },
