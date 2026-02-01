@@ -11,7 +11,7 @@ export default function Header() {
         { name: 'Home', path: '/' },
         { name: 'Pillars', path: '/pillars' },
         { name: 'Events', path: '/#history' },
-        { name: 'Newsletters', path: '/#newsletters' },
+        { name: 'Newsletters', path: '/newsletters' },
         { name: 'LMS', path: '/lms' },
         { name: 'Contact', path: '/#contact' },
         { name: 'About', path: '/#about' },
