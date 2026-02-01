@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     images: ["/images/hero.png"],
   },
   icons: {
-    icon: "/favicon.ico",
+    icon: "/Orepa_logo_h.ico",
   },
 };
 
