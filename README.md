@@ -441,7 +441,7 @@ ISC
 ## Contact
 
 **OREPA Development Team**
-- Email: info@orepa.org
+- Email: orepastudentchapter@gmail.com
 - Website: https://orepa.org (coming soon)
 
 ---

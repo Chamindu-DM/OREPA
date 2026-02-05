@@ -25,7 +25,7 @@ export default function EventSection() {
                     <span className="sr_only">Event</span>
                 </h2>
                 <div className="jms_info">
-                    <p className="jms_info_ttl">Japan Mobility Show 2025</p>
+                    <p className="jms_info_ttl">Japan</p>
                     <div className="jms_date_wrap">
                         <div className="jms_date">
                             <span className="jms_date_num">10.30</span>

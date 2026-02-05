@@ -11,11 +11,12 @@ export default function Header() {
         { name: 'Home', path: '/' },
         { name: 'Pillars', path: '/pillars' },
         { name: 'Events', path: '/events' },
+        { name: 'Our Team', path: '/our-team' },
         { name: 'Newsletters', path: '/newsletters' },
-        { name: 'LMS', path: '/lms' },
+        //{ name: 'LMS', path: '/lms' },
         { name: 'Contact', path: '/#contact' },
-        { name: 'About', path: '/#about' },
-        { name: 'Log-in', path: '/login' },
+        { name: 'About', path: '/about' },
+        //{ name: 'Log-in', path: '/login' },
     ];
 
     // Close menu when clicking outside or when route changes

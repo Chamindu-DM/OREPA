@@ -79,7 +79,7 @@ export default function Home() {
         <AboutUs />
         <History />
         <Gallery />
-        <EventSection />
+        {/* <EventSection /> */}
         <Newsletters />
         <ContactUs />
       </main>

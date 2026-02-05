@@ -58,12 +58,14 @@ export default function ContactUs() {
                     <div style={{ marginTop: '40px', display: 'flex', flexDirection: 'column', gap: '30px' }}>
                         <div>
                             <p className="history_txt" style={{ fontSize: '14px', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px', opacity: 0.7, color: 'white' }}>Email</p>
-                            <a href="mailto:info@orepa.org" className="jms_info_ttl" style={{ fontSize: '20px', textDecoration: 'none', color: 'white', display: 'block' }}>info@orepa.org</a>
+                            <a href="mailto:orepastudentchapter@gmail.com" className="jms_info_ttl" style={{ fontSize: '20px', textDecoration: 'none', color: 'white', display: 'block' }}>orepastudentchapter@gmail.com</a>
                         </div>
 
                         <div>
                             <p className="history_txt" style={{ fontSize: '14px', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px', opacity: 0.7, color: 'white' }}>Phone</p>
-                            <p className="jms_info_ttl" style={{ fontSize: '20px', color: 'white' }}>+94 11 234 5678</p>
+                            <a href="tel:+94702552099" className="jms_info_ttl" style={{ fontSize: '20px', textDecoration: 'none', color: 'white', display: 'block' }}>+94 70 255 2099</a>
+                            <p className="jms_info_ttl" style={{ fontSize: '20px', color: 'white' }}>Kavin Siriwardana<br />
+                                <span style={{ fontSize: '20px', color: 'white' }}>President - Student Chapter</span></p>
                         </div>
 
                         <div>
