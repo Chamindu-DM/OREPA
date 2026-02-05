@@ -50,7 +50,13 @@ const projectsData: Project[] = [
             "The beach cleanup was successfully held on Saturday, July 26th, 2025, from 7:00 AM to 9:00 AM at Crow Island Beach, Colombo 15. The event was organized by Center for Beach Cleanups, and brought together over 500 volunteers from various universities and organizations across Sri Lanka. OREPA too proudly joined as a partner. Equipped with gloves, garbage bags, and a shared sense of purpose, participants worked collaboratively to remove plastic waste and debris from the shoreline, demonstrating the power of organized, large-scale community action.",
             "OceanGuard stands as a testament to what can be achieved when institutions and individuals unite for a common cause. The initiative not only resulted in a visibly cleaner coastline but also strengthened inter-university and inter-organization collaboration and civic engagement, with participants receiving service recognition for their contribution. Beyond the cleanup itself, OceanGuard reinforces OREPA's commitment to sustainability and community service, setting a strong foundation for future environmental actions that prioritize responsibility, awareness, and lasting impact."
         ],
-        images: []
+        images: [
+            { src: '/images/OceanGuard1.jpeg', width: 400, height: 710 },
+            { src: '/images/OceanGuard2.jpeg', width: 600, height: 338 },
+            { src: '/images/OceanGuard3.jpeg', width: 600, height: 338 },
+            { src: '/images/OceanGuard4.jpeg', width: 600, height: 338 },
+            { src: '/images/OceanGuard5.jpeg', width: 600, height: 338 }
+        ]
     },
     {
         id: 'induction',
