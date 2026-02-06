@@ -13,12 +13,10 @@ const historyItems = [
         title: ["Annual General Meeting-2025"],
         texts: [
             [
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+                "The Annual General Meeting (AGM) of the Old Royalists Engineering Professionals’ Association (OREPA) Student Chapter for 2025 was held on 18th May 2025 at the RCU Skills Centre. It functioned as the formal conclusion of the OREPA Student Chapter 2024/25 term and the official commencement of the 2025/26 term, bringing together the main body, the student chapter, and undergraduates across multiple universities."
             ],
             [
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate",
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate\"",
+                "The proceedings began with the College Anthem, followed by a welcome speech delivered by the Co-Director of Membership of the OREPA Student Chapter 2024/25. The Secretary’s Report and Treasurer’s Report then outlined the major projects and financial performance of the term. The AGM also included the distribution of appreciation letters to the outgoing Executive Board and project contributors, together with addresses by the outgoing Student Chapter President and the Main Body President, formally acknowledging the efforts of the 2024/25 team."
             ],
         ],
         images: [
