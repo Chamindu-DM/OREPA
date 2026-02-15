@@ -1440,6 +1440,8 @@ body {
 /* History section */
 .history {
   overflow: clip;
+  position: relative;
+  z-index: 1;
 }
 
 .history_inner {
@@ -1452,6 +1454,7 @@ body {
   height: 100vh;
   left: 0;
   top: 0;
+  overflow: hidden;
 }
 
 .history_item {

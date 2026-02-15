@@ -39,11 +39,11 @@ export default function Partners() {
     }, []);
 
     return (
-        <section ref={sectionRef} className="partners_section js_section" style={{ padding: '100px 0', overflow: 'hidden', backgroundColor: '#000', marginTop: '50px' }}>
-            <div className="inner" style={{ maxWidth: '1440px', margin: '0 auto', padding: '0 40px' }}>
+        <section ref={sectionRef} className="partners_section js_section" style={{ padding: '120px 0 100px', overflow: 'hidden', backgroundColor: '#000', marginTop: '0', position: 'relative', zIndex: 10 }}>
+            <div className="inner" style={{ maxWidth: '1440px', margin: '0 auto', padding: '0 20px' }}>
                 <div className="partners_header" style={{ marginBottom: '60px', textAlign: 'center' }}>
                     <h2 className="partners_title" style={{
-                        fontSize: 'clamp(2.5rem, 5vw, 4rem)',
+                        fontSize: '36px',
                         textTransform: 'uppercase',
                         fontWeight: '300',
                         letterSpacing: '0.05em',
@@ -86,8 +86,8 @@ export default function Partners() {
                                 <div className="partner_card" style={{
                                     background: '#fff',
                                     borderRadius: '15px',
-                                    padding: '30px',
-                                    height: '320px',
+                                    padding: '30px 20px',
+                                    minHeight: '300px',
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
@@ -118,24 +118,24 @@ export default function Partners() {
                                             }}
                                         />
                                     </div>
-                                    <div className="partner_info" style={{ textAlign: 'center', color: '#000' }}>
+                                    <div className="partner_info" style={{ textAlign: 'center', color: '#000', marginTop: '10px' }}>
                                         <h3 style={{
-                                            fontSize: '1.2rem',
+                                            fontSize: '16px',
                                             fontWeight: '600',
-                                            marginBottom: '5px',
+                                            marginBottom: '6px',
                                             color: '#000'
                                         }}>
                                             {partner.name}
                                         </h3>
                                         <p style={{
-                                            fontSize: '0.9rem',
+                                            fontSize: '14px',
                                             color: '#666',
-                                            marginBottom: '5px'
+                                            marginBottom: '4px'
                                         }}>
                                             {partner.title}
                                         </p>
                                         <p style={{
-                                            fontSize: '0.8rem',
+                                            fontSize: '12px',
                                             color: '#999',
                                             textTransform: 'uppercase',
                                             letterSpacing: '0.05em'

@@ -79,7 +79,7 @@ export default function Home() {
         <Statement state={state} />
         <AboutUs />
         <History />
-        <Gallery />
+        {/*<Gallery />*/}
         <Partners />
         {/* <EventSection /> */}
         <Newsletters />
