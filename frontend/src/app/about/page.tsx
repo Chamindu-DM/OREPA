@@ -102,8 +102,8 @@ export default function AboutPage() {
                         <div className="pillar_inner">
                             <div className="pillar_content_grid" style={{ alignItems: 'center' }}>
                                 <div className="pillar_content_left" style={{ width: '100%', maxWidth: 'none' }}>
-                                    <h2 className="pillar_title fade_in_up" style={{ fontSize: '2rem', marginBottom: '1.5rem' }}>WHO ARE WE?</h2>
-                                    <div className="fade_in_up" style={{ fontSize: '1.1rem', lineHeight: '1.6', color: 'rgba(255, 255, 255, 0.8)' }}>
+                                    <h2 className="pillar_title fade_in_up" style={{ fontSize: 'clamp(2rem, 5vw, 2.5rem)', marginBottom: '1.5rem' }}>WHO ARE WE?</h2>
+                                    <div className="fade_in_up" style={{ fontSize: 'clamp(1.1rem, 2.5vw, 1.25rem)', lineHeight: '1.8', color: 'rgba(255, 255, 255, 0.85)' }}>
                                         <p style={{ marginBottom: '1.5rem' }}>
                                             OREPA, Old Royalists Engineering Professionals’ Association, instigated on Sunday the 23rd of November, 2014, is the most recent addition to professional bodies under the Royal College Union. A large number of engineers, architects and other professionals in allied fields gathered to bring this organization about and through it, serve the Alma mater.
                                         </p>
@@ -140,8 +140,8 @@ export default function AboutPage() {
                         <div className="pillar_inner">
                             <div className="pillar_content_grid">
                                 <div className="pillar_content_left" style={{ width: '100%', maxWidth: 'none' }}>
-                                    <h2 className="pillar_title fade_in_up" style={{ fontSize: '2rem', marginBottom: '1.5rem' }}>WHAT DO WE STAND FOR?</h2>
-                                    <div className="fade_in_up" style={{ fontSize: '1.1rem', lineHeight: '1.6', color: 'rgba(255, 255, 255, 0.8)' }}>
+                                    <h2 className="pillar_title fade_in_up" style={{ fontSize: 'clamp(2rem, 5vw, 2.5rem)', marginBottom: '1.5rem' }}>WHAT DO WE STAND FOR?</h2>
+                                    <div className="fade_in_up" style={{ fontSize: 'clamp(1.1rem, 2.5vw, 1.25rem)', lineHeight: '1.8', color: 'rgba(255, 255, 255, 0.85)' }}>
                                         <p style={{ marginBottom: '1.5rem' }}>
                                             Old Royalists Engineering Professionals’ Association was formed under the patronage of Royal College Union. OREPA is a gathering of old Royalist Engineers, Architects, and Quantity Surveyors and other engineering related professionals.
                                         </p>
@@ -159,8 +159,8 @@ export default function AboutPage() {
                         <div className="pillar_inner">
                             <div className="pillar_content_grid">
                                 <div className="pillar_content_left" style={{ width: '100%', maxWidth: 'none' }}>
-                                    <h2 className="pillar_title fade_in_up" style={{ fontSize: '2rem', marginBottom: '1.5rem' }}>OUR THEME</h2>
-                                    <div className="fade_in_up" style={{ fontSize: '1.1rem', lineHeight: '1.6', color: 'rgba(255, 255, 255, 0.8)' }}>
+                                    <h2 className="pillar_title fade_in_up" style={{ fontSize: 'clamp(2rem, 5vw, 2.5rem)', marginBottom: '1.5rem' }}>OUR THEME</h2>
+                                    <div className="fade_in_up" style={{ fontSize: 'clamp(1.1rem, 2.5vw, 1.25rem)', lineHeight: '1.8', color: 'rgba(255, 255, 255, 0.85)' }}>
                                         <p style={{ marginBottom: '1.5rem' }}>
                                             We cater our services to our Alma mater, and the community at large, through various projects. The key themes, derived from the five-fold objectives mentioned in the in our constitution, under which our projects are scoped in and organised, are;
                                         </p>

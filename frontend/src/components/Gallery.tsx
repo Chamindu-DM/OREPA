@@ -144,7 +144,7 @@ export default function Gallery() {
                                                 </span>
                                             </button>
                                         ))}
-                                        <p className="gallery_copy">＊CENTURY Concept Model</p>
+                                        <p className="gallery_copy">＊Concept Model</p>
                                     </div>
                                 </div>
                             </div>

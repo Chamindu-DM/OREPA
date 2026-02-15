@@ -1,21 +1,21 @@
 export const mainBodyData = [
     {
-        name: 'Lahiru Wijerathne',
+        name: 'Eng. Lahiru Wijerathne',
         title: 'President',
         image: '/images/Main-body EB Portraits/President - Lahiru Wijerathne.png'
     },
     {
-        name: 'Neranjana Dissanayake',
+        name: 'Eng. Neranjana Dissanayake',
         title: 'Vice President',
         image: '/images/Main-body EB Portraits/Vice President-Neranjan Dissanayake.png'
     },
     {
-        name: 'Dehan Vithana',
+        name: 'Eng. Dehan Vithana',
         title: 'Secretary',
         image: '/images/Main-body EB Portraits/Secretary - Dehan Vithana.png'
     },
     {
-        name: 'Gayan Indeera',
+        name: 'Eng. Gayan Indeera',
         title: 'Treasurer',
         image: '/images/Main-body EB Portraits/Treasurer - Gayan Indeera.png'
     }

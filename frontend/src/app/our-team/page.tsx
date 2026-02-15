@@ -85,13 +85,18 @@ export default function OurTeamPage() {
                     <section className="pillar_section js_section" style={{ paddingBottom: '3rem' }}>
                         <div className="pillar_inner">
                             <div className="pillar_header" style={{ justifyContent: 'center' }}>
-                                <h2 className="pillar_title" style={{ textAlign: 'center', flex: 'none', fontSize: '2.2rem' }}>
-                                    <span className="text_wrap js_text_wrap" aria-hidden="true">
-                                        {'OREPA Executive Committee'.split('').map((letter, i) => (
-                                            <span key={i} className="letter">{letter === ' ' ? '\u00A0' : letter}</span>
+                                <h2 className="pillar_title" style={{ textAlign: 'center', flex: 'none', fontSize: 'clamp(2rem, 5vw, 2.5rem)' }}>
+                                    <span className="text_wrap js_text_wrap" aria-hidden="true" style={{ whiteSpace: 'normal', display: 'block' }}>
+                                        {'OREPA Main Body Executive Committee'.split(' ').map((word, wBtn) => (
+                                            <span key={wBtn} style={{ display: 'inline-block', whiteSpace: 'nowrap' }}>
+                                                {word.split('').map((letter, i) => (
+                                                    <span key={i} className="letter">{letter}</span>
+                                                ))}
+                                                {'\u00A0'}
+                                            </span>
                                         ))}
                                     </span>
-                                    <span className="sr_only">OREPA Executive Committee</span>
+                                    <span className="sr_only">OREPA Main Body Executive Committee</span>
                                 </h2>
                             </div>
                             <div className="pillar_content">
@@ -168,7 +173,7 @@ export default function OurTeamPage() {
                     {/* Co-Directors Section Grouped by Pillar */}
                     <div style={{ marginTop: '5rem' }}>
                         <section className="js_section" style={{ marginBottom: '3rem' }}>
-                            <h2 className="pillar_title" style={{ textAlign: 'center', marginBottom: '3rem', fontSize: '2.5rem' }}>
+                            <h2 className="pillar_title" style={{ textAlign: 'center', marginBottom: '3rem', fontSize: 'clamp(2.5rem, 5vw, 3rem)' }}>
                                 <span className="text_wrap js_text_wrap" aria-hidden="true">
                                     {'Co-Directors'.split('').map((letter, i) => (
                                         <span key={i} className="letter">{letter === ' ' ? '\u00A0' : letter}</span>
@@ -182,7 +187,7 @@ export default function OurTeamPage() {
                             <section key={pillar.id} className="pillar_section js_section" style={{ marginBottom: '4rem' }}>
                                 <div className="pillar_inner">
                                     <div className="pillar_header" style={{ justifyContent: 'center', marginBottom: '2rem' }}>
-                                        <h3 className="pillar_title" style={{ fontSize: '1.8rem', textAlign: 'center', flex: 'none' }}>
+                                        <h3 className="pillar_title" style={{ fontSize: 'clamp(1.5rem, 4vw, 2.2rem)', textAlign: 'center', flex: 'none' }}>
                                             <span className="text_wrap js_text_wrap" aria-hidden="true">
                                                 {pillar.title} {pillar.titleLine2}
                                             </span>

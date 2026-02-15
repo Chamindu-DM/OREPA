@@ -8,6 +8,7 @@ import Navigation from '@/components/Navigation';
 import Statement from '@/components/Statement';
 import Gallery from '@/components/Gallery';
 import History from '@/components/History';
+import Partners from '@/components/Partners';
 import AboutUs from '@/components/AboutUs';
 import Newsletters from '@/components/Newsletters';
 import EventSection from '@/components/EventSection';
@@ -79,6 +80,7 @@ export default function Home() {
         <AboutUs />
         <History />
         <Gallery />
+        <Partners />
         {/* <EventSection /> */}
         <Newsletters />
         <ContactUs />
