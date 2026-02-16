@@ -83,6 +83,21 @@ const projectsData: Project[] = [
             { src: '/images/agm25-1.jpg', width: 464, height: 564 },
             { src: '/images/agm25-2.jpg', width: 464, height: 260 }
         ]
+    },
+    {
+        id: 'fraternite',
+        num: '05',
+        title: "Fraternite '26",
+        description: [
+            "Fraternite, the annual gathering of OREPA, was held on 13th February 2026 at Rock House, Piliyandala, bringing together members for an evening of connection and celebration. With a relaxed and energetic atmosphere, the event provided a meaningful space for OREPA members to step away from their busy schedules and come together under one roof.",
+            "A key highlight of Fraternite was the diverse mix of attendees. There were members representing different universities (both state and private) and multiple batches, which made the gathering especially valuable. The event encouraged conversations across generations, helping members meet new people, strengthen existing friendships, and expand their professional and social networks in a natural, enjoyable way.",
+            "Beyond networking, Fraternite was also a chance to simply have fun and relive shared experiences. From laughter-filled conversations to moments of nostalgia, the gathering helped everyone vibe and recall old memories while creating new ones. Overall, it stood out as a memorable and successful event that reinforced the spirit of unity and community within OREPA."
+        ],
+        images: [
+            { src: '/images/Fraternite 24.jpg', width: 585, height: 350 },
+            { src: '/images/Fraternite 24-1.jpg', width: 324, height: 231 },
+            { src: '/images/Fraternite 24-2.jpg', width: 244, height: 232 }
+        ]
     }
 ];
 

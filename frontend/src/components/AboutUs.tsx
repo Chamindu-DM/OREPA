@@ -40,10 +40,10 @@ export default function AboutUs() {
             }
         );
 
-         // Animate image
+        // Animate image
         const img = section.querySelector('.jms_movie_img');
         if (img) {
-             gsap.to(img, {
+            gsap.to(img, {
                 opacity: 1,
                 duration: 1,
                 scrollTrigger: {
@@ -68,21 +68,35 @@ export default function AboutUs() {
                     <span className="sr_only">About</span>
                 </h2>
                 <div className="jms_info">
-                    <p className="jms_info_ttl">Who We Are</p>
-                    <div style={{ marginTop: '30px' }}>
-                        <p className="history_txt" style={{ fontSize: '16px', maxWidth: '600px' }}>
-                            The Old Royalists’ Engineering Professionals’ Association (OREPA) serves as the unified platform for Royal College alumni in the engineering and technological sectors. We are more than just a professional network; we are a bridge between the legacy of Reid Avenue and the frontiers of modern industry.
-                        </p>
-                        <p className="history_txt" style={{ fontSize: '16px', maxWidth: '600px', marginTop: '20px' }}>
-                            Join us in shaping a future that honours our past while embracing new challenges and opportunities
-                            in the engineering world.
-                        </p>
+                    <div className="who_we_are_container">
+                        <div className="who_we_are_content">
+                            <p className="jms_info_ttl">Who We Are</p>
+                            <div style={{ marginTop: '30px' }}>
+                                <p className="history_txt" style={{ fontSize: '16px', maxWidth: '600px' }}>
+                                    The Old Royalists’ Engineering Professionals’ Association (OREPA) serves as the unified platform for Royal College alumni in the engineering and technological sectors. We are more than just a professional network; we are a bridge between the legacy of Reid Avenue and the frontiers of modern industry.
+                                </p>
+                                <p className="history_txt" style={{ fontSize: '16px', maxWidth: '600px', marginTop: '20px' }}>
+                                    Join us in shaping a future that honours our past while embracing new challenges and opportunities
+                                    in the engineering world.
+                                </p>
+                            </div>
+                        </div>
+                        <div className="who_we_are_logo">
+                            <Image
+                                src="/images/OREPA Term Logo for 2025-26.jpeg"
+                                alt="OREPA Term Logo 2025-26"
+                                width={300}
+                                height={300}
+                                style={{ width: '100%', maxWidth: '300px', height: 'auto' }}
+                            />
+                            <span>OREPA Term Logo for 2025-26</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div className="jms_movie_wrap is_active">
-                 <div style={{ position: 'relative', width: '100%', height: 'auto' }}>
+                <div style={{ position: 'relative', width: '100%', height: 'auto' }}>
                     <Image
                         loading="lazy"
                         src="/images/hero.png" // Using an existing image for now
@@ -92,7 +106,7 @@ export default function AboutUs() {
                         className="jms_movie_img is_visible"
                         style={{ width: '100%', height: 'auto', opacity: 1 }}
                     />
-                 </div>
+                </div>
             </div>
         </section>
     );

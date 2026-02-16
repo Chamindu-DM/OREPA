@@ -3916,4 +3916,76 @@ a.contact_card_value:hover {
     margin-top: 1.5rem !important;
     display: block;
   }
+
+  .partners_mobile_spacer {
+    display: block !important;
+    height: 130vh;
+    width: 100%;
+    position: relative;
+    background: transparent;
+  }
+
+  .who_we_are_container {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .who_we_are_content {
+    width: 100%;
+  }
+
+  .who_we_are_logo {
+    width: 100%;
+    margin-top: 40px;
+  }
+}
+
+.partners_mobile_spacer {
+  display: none;
+}
+
+.who_we_are_container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 40px;
+}
+
+.who_we_are_content {
+  flex: 1;
+  min-width: 300px;
+}
+
+.who_we_are_logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.who_we_are_logo span {
+  margin-top: 10px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+  font-family: var(--font-primary);
+  font-weight: 300;
+  letter-spacing: 0.05em;
+}
+
+.about_text_forced {
+  font-family: var(--font-primary);
+  /* Ensure correct font */
+  font-size: 18px !important;
+  line-height: 1.8 !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 300 !important;
+}
+
+@media screen and (max-width: 768px) {
+  .about_text_forced {
+    font-size: 18px !important;
+    /* Force 18px on mobile */
+  }
 }

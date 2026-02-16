@@ -39,7 +39,8 @@ export default function Partners() {
     }, []);
 
     return (
-        <section ref={sectionRef} className="partners_section js_section" style={{ padding: '120px 0 100px', overflow: 'hidden', backgroundColor: '#000', marginTop: '0', position: 'relative', zIndex: 10 }}>
+        <section ref={sectionRef} className="partners_section js_section" style={{ padding: '120px 0 100px', overflow: 'hidden', marginTop: '0', position: 'relative', zIndex: 10 }}>
+            <div className="partners_mobile_spacer"></div>
             <div className="inner" style={{ maxWidth: '1440px', margin: '0 auto', padding: '0 20px' }}>
                 <div className="partners_header" style={{ marginBottom: '60px', textAlign: 'center' }}>
                     <h2 className="partners_title" style={{

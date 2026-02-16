@@ -26,14 +26,11 @@ const historyItems = [
     },
     {
         num: '02',
-        title: ["Fraternite 24"],
+        title: ["Fraternite '26"],
         texts: [
             [
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+                "Fraternite, the annual gathering of OREPA, was held on 13th February 2026 at Rock House, Piliyandala, bringing together members for an evening of connection and celebration. With a relaxed and energetic atmosphere, the event provided a meaningful space for OREPA members to step away from their busy schedules and come together under one roof.",
+                "A key highlight of Fraternite was the diverse mix of attendees. There were members representing different universities (both state and private) and multiple batches, which made the gathering especially valuable. The event encouraged conversations across generations, helping members meet new people, strengthen existing friendships, and expand their professional and social networks in a natural, enjoyable way."
             ],
         ],
         images: [

@@ -55,7 +55,7 @@ export default function ContactUs() {
                 <div className="jms_info">
                     <p className="jms_info_ttl">Get in Touch</p>
 
-                    <div style={{ marginTop: '40px', display: 'flex', flexDirection: 'column', gap: '30px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
                         <div>
                             <p className="history_txt" style={{ fontSize: '14px', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px', opacity: 0.7, color: 'white' }}>Email</p>
                             <a href="mailto:orepastudentchapter@gmail.com" className="jms_info_ttl" style={{ fontSize: '20px', textDecoration: 'none', color: 'white', display: 'block' }}>orepastudentchapter@gmail.com</a>
