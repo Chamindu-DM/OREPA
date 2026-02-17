@@ -21,7 +21,7 @@ interface Newsletter {
     coverImage: string;
 }
 
-// Sample newsletters data - replace with actual data
+// Newsletters data - sorted newest to oldest
 const newslettersData: Newsletter[] = [
     {
         id: 1,
@@ -36,6 +36,118 @@ const newslettersData: Newsletter[] = [
         date: 'March 2024',
         pdfUrl: '/newsletters/March%202024.pdf',
         coverImage: '/newsletters/covers/March%202024.png'
+    },
+    {
+        id: 3,
+        title: 'OREPA Newsletter - March 2023',
+        date: 'March 2023',
+        pdfUrl: '/newsletters/March%202023.pdf',
+        coverImage: '/newsletters/covers/March%202023.jpg'
+    },
+    {
+        id: 4,
+        title: 'OREPA Newsletter - September 2022',
+        date: 'September 2022',
+        pdfUrl: '/newsletters/September%202022.pdf',
+        coverImage: '/newsletters/covers/September%202022.png'
+    },
+    {
+        id: 5,
+        title: 'OREPA Newsletter - December 2021',
+        date: 'December 2021',
+        pdfUrl: '/newsletters/December%202021.pdf',
+        coverImage: '/newsletters/covers/December%202021.png'
+    },
+    {
+        id: 6,
+        title: 'OREPA Newsletter - June 2021',
+        date: 'June 2021',
+        pdfUrl: '/newsletters/June%202021.pdf',
+        coverImage: '/newsletters/covers/June%202021.png'
+    },
+    {
+        id: 7,
+        title: 'OREPA Newsletter - December 2020',
+        date: 'December 2020',
+        pdfUrl: '/newsletters/December%202020.pdf',
+        coverImage: '/newsletters/covers/December%202020.jpg'
+    },
+    {
+        id: 8,
+        title: 'OREPA Newsletter - June 2020',
+        date: 'June 2020',
+        pdfUrl: '/newsletters/June%202020.pdf',
+        coverImage: '/newsletters/covers/June%202020.jpg'
+    },
+    {
+        id: 9,
+        title: 'OREPA Newsletter - February 2020',
+        date: 'February 2020',
+        pdfUrl: '/newsletters/February%202020.pdf',
+        coverImage: '/newsletters/covers/February%202020.png'
+    },
+    {
+        id: 10,
+        title: 'OREPA Newsletter - December 2019',
+        date: 'December 2019',
+        pdfUrl: '/newsletters/December%202019.pdf',
+        coverImage: '/newsletters/covers/December%202019.png'
+    },
+    {
+        id: 11,
+        title: 'OREPA Newsletter - August 2019',
+        date: 'August 2019',
+        pdfUrl: '/newsletters/August%202019.pdf',
+        coverImage: '/newsletters/covers/August%202019.png'
+    },
+    {
+        id: 12,
+        title: 'OREPA Newsletter - December 2018',
+        date: 'December 2018',
+        pdfUrl: '/newsletters/December%202018.pdf',
+        coverImage: '/newsletters/covers/December%202018.png'
+    },
+    {
+        id: 13,
+        title: 'OREPA Newsletter - May 2018',
+        date: 'May 2018',
+        pdfUrl: '/newsletters/May%202018.pdf',
+        coverImage: '/newsletters/covers/May%202018.png'
+    },
+    {
+        id: 14,
+        title: 'OREPA Newsletter - October 2017',
+        date: 'October 2017',
+        pdfUrl: '/newsletters/October%202017.pdf',
+        coverImage: '/newsletters/covers/October%202017.png'
+    },
+    {
+        id: 15,
+        title: 'OREPA Newsletter - March 2017',
+        date: 'March 2017',
+        pdfUrl: '/newsletters/March%202017.pdf',
+        coverImage: '/newsletters/covers/March%202017.png'
+    },
+    {
+        id: 16,
+        title: 'OREPA Newsletter - October 2016',
+        date: 'October 2016',
+        pdfUrl: '/newsletters/October%202016.pdf',
+        coverImage: '/newsletters/covers/October%202016.jpg'
+    },
+    {
+        id: 17,
+        title: 'OREPA Newsletter - July 2016',
+        date: 'July 2016',
+        pdfUrl: '/newsletters/July%202016.pdf',
+        coverImage: '/newsletters/covers/July%202016.jpg'
+    },
+    {
+        id: 18,
+        title: 'OREPA Newsletter - January 2016',
+        date: 'January 2016',
+        pdfUrl: '/newsletters/January%202016.pdf',
+        coverImage: '/newsletters/covers/January%202016.jpg'
     }
 ];
 
