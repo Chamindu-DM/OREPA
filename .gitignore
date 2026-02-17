@@ -1,0 +1,27 @@
+# ============================================================================
+# OREPA - Root .gitignore
+# ============================================================================
+
+# Environment Variables (CRITICAL - never commit secrets)
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Docker
+docker-compose.override.yml
+
+# Misc
+*.log

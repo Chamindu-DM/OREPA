@@ -4,15 +4,19 @@
 # ============================================================================
 #
 # Purpose:
-#   This file orchestrates three main services for the OREPA application:
-#   1. Frontend - Next.js 14 application with App Router
-#   2. Backend - Express.js API server with Node.js
-#   3. PostgreSQL - Relational database for data persistence
+#   This file orchestrates two main services for the OREPA application:
+#   1. Frontend - Next.js 16 application with App Router
+#   2. Backend  - Express.js API server with Node.js
+#
+# Database:
+#   PostgreSQL is hosted on Supabase (external service).
+#   The DATABASE_URL and DIRECT_URL environment variables must be set
+#   in a .env file at the project root or passed via the environment.
 #
 # Architecture:
-#   - All services run in isolated containers
+#   - Frontend and Backend run in isolated containers
 #   - Custom bridge network for secure inter-service communication
-#   - Named volumes for PostgreSQL data persistence
+#   - Database is external (Supabase) — no local PostgreSQL container
 #   - Environment-based configuration for flexibility
 #   - Health checks ensure service reliability
 #
@@ -21,7 +25,13 @@
 #   Rebuild:     docker-compose up --build
 #   Background:  docker-compose up -d
 #   Stop:        docker-compose down
-#   Full reset:  docker-compose down -v (WARNING: deletes Database data)
+#
+# Required .env Variables:
+#   DATABASE_URL    - Supabase PostgreSQL connection string (pooled)
+#   DIRECT_URL      - Supabase PostgreSQL direct connection string
+#   JWT_SECRET      - Secret key for JWT token signing
+#   JWT_EXPIRE      - JWT expiration time (e.g., '7d')
+#   CORS_ORIGIN     - Allowed CORS origin (e.g., http://localhost:3000)
 #
 # ============================================================================
 
@@ -35,7 +45,7 @@ services:
   # FRONTEND SERVICE - Next.js Application
   # ==========================================================================
   #
-  # Runs the Next.js 14 frontend with App Router
+  # Runs the Next.js 16 frontend with App Router
   # Features:
   #   - Hot Module Replacement (HMR) for instant updates during development
   #   - Port 3000 exposed to host machine
@@ -98,9 +108,13 @@ services:
   # Features:
   #   - RESTful API endpoints
   #   - JWT authentication
-  #   - MongoDB integration with Mongoose
+  #   - Supabase PostgreSQL integration with Prisma ORM
   #   - Auto-restart on code changes with nodemon
   #   - Comprehensive error handling and logging
+  #
+  # Database:
+  #   Connects to Supabase (external hosted PostgreSQL).
+  #   No local database container is needed.
   #
   backend:
     # Build configuration
@@ -122,19 +136,17 @@ services:
       - /app/node_modules                    # Preserve node_modules in container
 
     # Environment variables
+    # DATABASE_URL and DIRECT_URL connect to Supabase (external PostgreSQL)
     environment:
       - NODE_ENV=development                 # Enable development mode
       - PORT=5000                            # Server port
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
+      - DATABASE_URL=${DATABASE_URL}         # Supabase pooled connection string
+      - DIRECT_URL=${DIRECT_URL}             # Supabase direct connection string
       - JWT_SECRET=${JWT_SECRET}             # JWT signing key
       - JWT_EXPIRE=${JWT_EXPIRE}             # JWT expiration time
       - CORS_ORIGIN=${CORS_ORIGIN}           # Allowed CORS origin (frontend URL)
 
-    # Dependency management
-    # Backend waits for PostgreSQL to be healthy before starting
-    depends_on:
-      postgres:
-        condition: service_healthy
+    # No depends_on for database — Supabase is external and always available
 
     # Network configuration
     networks:
@@ -151,52 +163,6 @@ services:
       retries: 3
       start_period: 40s
 
-  # ==========================================================================
-  # POSTGRESQL SERVICE - Relational Database
-  # ==========================================================================
-  #
-  # PostgreSQL database for persistent data storage
-  # Features:
-  #   - ACID Compliance
-  #   - Relational data model with Prisma ORM
-  #   - Data persistence with named volumes
-  #
-  postgres:
-    # Official PostgreSQL image from Docker Hub
-    image: postgres:15-alpine                # Use PostgreSQL 15 Alpine version
-
-    container_name: orepa-db          # Friendly container name
-
-    # Port mapping: host:container
-    # Access PostgreSQL at localhost:5434
-    ports:
-      - "5434:5432"
-
-    # Volume for data persistence
-    volumes:
-      - postgres_data:/var/lib/postgresql/data # Named volume for PostgreSQL data
-
-    # Environment variables
-    environment:
-      - POSTGRES_USER=${POSTGRES_USER}       # Default user
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD} # Default password
-      - POSTGRES_DB=${POSTGRES_DB}           # Default database
-
-    # Network configuration
-    networks:
-      - orepa-network
-
-    # Restart policy
-    restart: unless-stopped
-
-    # Health check to ensure PostgreSQL is ready
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-
 # ============================================================================
 # NETWORKS
 # ============================================================================
@@ -211,21 +177,6 @@ networks:
   orepa-network:
     driver: bridge                           # Bridge driver for same-host communication
     name: orepa-network                      # Explicit network name
-
-# ============================================================================
-# VOLUMES
-# ============================================================================
-#
-# Named volumes for persistent data storage
-# Data in these volumes persists across container restarts
-# Use 'docker-compose down -v' to delete volumes (WARNING: data loss)
-#
-volumes:
-  # PostgreSQL data volume
-  # Stores all database tables and records
-  postgres_data:
-    driver: local
-    name: orepa-postgres-data
 
 # ============================================================================
 # END OF DOCKER COMPOSE CONFIGURATION

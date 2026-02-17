@@ -7,17 +7,20 @@
 #
 # Features:
 #   - Node.js 20 Alpine Linux for minimal footprint
-#   - Nodemon for automatic server restarts on code changes
+#   - Nodemon for automatic server restarts during development
 #   - Non-root user for enhanced security
-#   - Wait-for-it support to ensure Database is ready
-#   - Efficient layer caching for faster builds
+#   - Efficient multi-stage builds with layer caching
 #
 # Components:
 #   - Express.js REST API
-#   - PostgreSQL with Prisma ORM
+#   - Supabase PostgreSQL with Prisma ORM
 #   - JWT authentication
 #   - Comprehensive error handling
 #   - Request logging with Morgan
+#
+# Database:
+#   PostgreSQL is hosted on Supabase (external service).
+#   No local database container or wait-for-it script is needed.
 #
 # Usage:
 #   Build: docker build -t orepa-backend .
@@ -26,120 +29,120 @@
 # ============================================================================
 
 # ============================================================================
-# BASE IMAGE
+# DEVELOPMENT STAGE (base)
 # ============================================================================
 #
-# Use Node.js 20 Alpine Linux for a lightweight container
-# Alpine is a minimal Linux distribution optimized for containers
+# Used for local development with nodemon auto-restart
 #
 FROM node:20-alpine AS base
 
 # Install system dependencies
-# - curl: For health checks and downloading wait-for-it script
-# - bash: Required for wait-for-it script
+# - curl: For health checks
 # - openssl: Required for Prisma Client
-# Update package index first to resolve DNS issues
-RUN apk update && apk add --no-cache curl bash openssl
+RUN apk update && apk add --no-cache curl openssl
 
 # Set working directory
-# All application files will be stored here
 WORKDIR /app
 
-# ============================================================================
-# DEPENDENCY INSTALLATION
-# ============================================================================
-#
 # Copy package files first for optimal Docker layer caching
-# If these files haven't changed, Docker will use cached layers
-#
 COPY package*.json ./
 
-# Install dependencies
-# Uses npm ci for clean, reproducible installs based on package-lock.json
-RUN npm install
+# Install all dependencies (including devDependencies for nodemon)
+RUN npm ci
 
-# Install nodemon globally for development auto-restart functionality
-# Nodemon watches for file changes and automatically restarts the server
+# Install nodemon globally for development auto-restart
 RUN npm install -g nodemon
 
-# ============================================================================
-# APPLICATION CODE
-# ============================================================================
-#
 # Copy all application source code
-# This includes models/, routes/, controllers/, middleware/, etc.
-#
 COPY . .
 
-# Generate Prisma Client
-# This is required after copying schema.prisma
+# Generate Prisma Client from schema
 RUN npx prisma generate
 
-# ============================================================================
-# WAIT-FOR-IT SCRIPT (Database Readiness Check)
-# ============================================================================
-#
-# Download wait-for-it script to ensure MongoDB is ready before starting
-# This prevents connection errors during startup
-#
-RUN curl -o /wait-for-it.sh https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh && \
-    chmod +x /wait-for-it.sh
-
-# ============================================================================
-# SECURITY CONFIGURATION
-# ============================================================================
-#
-# Create a non-root user and group for running the application
-# Running as non-root reduces security risks
-#
+# Create non-root user for security
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodeuser -u 1001 -G nodejs && \
     chown -R nodeuser:nodejs /app
 
 # Switch to non-root user
-# All subsequent commands and the application will run as this user
 USER nodeuser
 
-# ============================================================================
-# PORT CONFIGURATION
-# ============================================================================
-#
 # Expose port 5000 for the API server
-# This port should match the PORT environment variable
-#
 EXPOSE 5000
 
-# ============================================================================
-# STARTUP COMMAND
-# ============================================================================
-#
 # Start the server with nodemon for development
-# Nodemon will:
-#   - Watch for file changes in the /app directory
-#   - Automatically restart the server when changes are detected
-#   - Provide better error messages and debugging
-#
-# For production, use: CMD ["node", "server.js"]
-#
 CMD ["nodemon", "server.js"]
 
 # ============================================================================
-# ENVIRONMENT VARIABLES (Set in docker-compose.yml)
+# PRODUCTION BUILD STAGE (builder)
+# ============================================================================
+#
+# Installs all dependencies, generates Prisma client, then prunes dev deps
+#
+FROM node:20-alpine AS builder
+
+RUN apk update && apk add --no-cache openssl
+
+WORKDIR /app
+
+# Install all dependencies (need devDeps for prisma generate)
+COPY package*.json ./
+RUN npm ci
+
+# Copy source code and generate Prisma client
+COPY . .
+RUN npx prisma generate
+
+# Remove devDependencies for production
+RUN npm prune --production
+
+# ============================================================================
+# PRODUCTION RUN STAGE (runner)
+# ============================================================================
+#
+# Minimal production image with only production dependencies
+#
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+# Install system dependencies needed at runtime
+# - curl: For health checks
+# - openssl: Required for Prisma Client
+RUN apk update && apk add --no-cache curl openssl
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodeuser -u 1001 -G nodejs
+
+# Copy application from builder stage
+COPY --from=builder --chown=nodeuser:nodejs /app .
+
+USER nodeuser
+
+EXPOSE 5000
+
+# Start the server with node (no nodemon in production)
+CMD ["node", "server.js"]
+
+# ============================================================================
+# ENVIRONMENT VARIABLES (Set in docker-compose.yml or .env)
 # ============================================================================
 #
 # The following environment variables should be provided at runtime:
 #   - NODE_ENV: 'development' or 'production'
 #   - PORT: Server port (default: 5000)
-#   - DATABASE_URL: PostgreSQL connection string
+#   - DATABASE_URL: Supabase PostgreSQL pooled connection string
+#   - DIRECT_URL: Supabase PostgreSQL direct connection string
 #   - JWT_SECRET: Secret key for JWT token signing
 #   - JWT_EXPIRE: JWT expiration time (e.g., '7d')
 #   - CORS_ORIGIN: Allowed CORS origin (frontend URL)
 #
 # ============================================================================
-
-# ============================================================================
+#
 # HEALTH CHECK (Defined in docker-compose.yml)
-# ============================================================================
 #
 # The health check endpoint is implemented in the application:
 #   GET /api/health
@@ -149,48 +152,3 @@ CMD ["nodemon", "server.js"]
 #   - JSON: { status: 'ok', timestamp: '...', database: 'connected' }
 #
 # ============================================================================
-
-# ============================================================================
-# PRODUCTION BUILD STAGE
-# ============================================================================
-#
-FROM node:20-alpine AS builder
-
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npx prisma generate
-# Prune dev dependencies
-RUN npm prune --production
-
-# ============================================================================
-# PRODUCTION RUN STAGE
-# ============================================================================
-#
-FROM node:20-alpine AS runner
-WORKDIR /app
-
-ENV NODE_ENV production
-
-# Install system dependencies
-# openssl is required for Prisma in production too
-RUN apk update && apk add --no-cache curl bash openssl
-
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodeuser -u 1001 -G nodejs
-
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app .
-
-# Download wait-for-it script to ensure Database is ready before starting
-RUN curl -o /wait-for-it.sh https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh && \
-    chmod +x /wait-for-it.sh
-
-RUN chown -R nodeuser:nodejs /app
-
-USER nodeuser
-
-EXPOSE 5000
-
-CMD ["node", "server.js"]
