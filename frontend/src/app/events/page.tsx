@@ -17,6 +17,7 @@ interface Project {
     title: string;
     description: string[];
     images: { src: string; width: number; height: number }[];
+    facebookAlbum?: string;
 }
 
 const projectsData: Project[] = [
@@ -39,7 +40,8 @@ const projectsData: Project[] = [
             { src: '/images/axis3.jpg', width: 280, height: 186 },
             { src: '/images/axis5.jpg', width: 435, height: 290 },
             { src: '/images/axis6.jpg', width: 435, height: 290 }
-        ]
+        ],
+        facebookAlbum: 'https://www.facebook.com/media/set/?set=a.778696154870154&type=3'
     },
     {
         id: 'oceanguard',
@@ -67,7 +69,13 @@ const projectsData: Project[] = [
             "Organized by the OREPA Student Chapter, the event brought together new members, senior student representatives, alumni, and members of the OREPA main body, creating a strong platform for inter-university interaction and professional networking. The program featured keynote speeches, addresses by OREPA leadership including the Main Body President, and an introduction to the association's structure, committees, and annual initiatives.",
             "Beyond orientation, the induction laid the foundation for sustained engagement, leadership development, and active participation throughout the 2025-26 term. It emphasized the importance of maintaining strong ties with the professional body, contributing to technical and social initiatives, and upholding the shared values of Royal College and OREPA. As a unifying event, the Induction 2025-26 strengthened the chapter's member base and set a clear direction for collaborative growth, ensuring that new members were motivated, informed, and ready to contribute to the OREPA Student Chapter in the year ahead."
         ],
-        images: []
+        images: [
+            { src: '/images/Induction-2025-1.jpg', width: 585, height: 390 },
+            { src: '/images/Induction-2025-2.jpg', width: 280, height: 186 },
+            { src: '/images/Induction-2025-3.jpg', width: 280, height: 186 },
+            { src: '/images/Induction-2025-4.jpg', width: 280, height: 186 },
+            { src: '/images/Induction-2025-5.jpg', width: 435, height: 290 }
+        ]
     },
     {
         id: 'agm',
@@ -82,7 +90,8 @@ const projectsData: Project[] = [
             { src: '/images/agm25-main.jpg', width: 585, height: 350 },
             { src: '/images/agm25-1.jpg', width: 464, height: 564 },
             { src: '/images/agm25-2.jpg', width: 464, height: 260 }
-        ]
+        ],
+        facebookAlbum: 'https://www.facebook.com/media/set/?set=a.684638667609237&type=3'
     },
     {
         id: 'fraternite',
@@ -97,7 +106,8 @@ const projectsData: Project[] = [
             { src: '/images/Fraternite 24.jpg', width: 585, height: 350 },
             { src: '/images/Fraternite 24-1.jpg', width: 324, height: 231 },
             { src: '/images/Fraternite 24-2.jpg', width: 244, height: 232 }
-        ]
+        ],
+        facebookAlbum: 'https://www.facebook.com/media/set/?set=a.533885469351225&type=3'
     }
 ];
 
@@ -240,6 +250,24 @@ export default function EventsPage() {
                                         <div className="event_project_images_placeholder">
                                             <p>Photos coming soon</p>
                                         </div>
+                                    )}
+
+                                    {project.facebookAlbum && (
+                                        <a
+                                            href={project.facebookAlbum}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="event_facebook_album_btn"
+                                        >
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                                            </svg>
+                                            View More Photos on Facebook
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M7 17L17 7" />
+                                                <path d="M7 7h10v10" />
+                                            </svg>
+                                        </a>
                                     )}
                                 </div>
                             </div>

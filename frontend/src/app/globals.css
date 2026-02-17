@@ -3906,6 +3906,49 @@ a.contact_card_value:hover {
   font-weight: var(--fw-Light);
 }
 
+.event_facebook_album_btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 30px;
+  padding: 14px 28px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 15px;
+  font-weight: var(--fw-Medium);
+  text-decoration: none;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  letter-spacing: 0.02em;
+}
+
+.event_facebook_album_btn:hover {
+  background: rgba(24, 119, 242, 0.12);
+  border-color: #1877F2;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(24, 119, 242, 0.2);
+}
+
+.event_facebook_album_btn svg:first-child {
+  transition: color 0.35s ease;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.event_facebook_album_btn:hover svg:first-child {
+  color: #1877F2;
+}
+
+.event_facebook_album_btn svg:last-child {
+  transition: transform 0.35s ease;
+}
+
+.event_facebook_album_btn:hover svg:last-child {
+  transform: translate(2px, -2px);
+}
+
 /* Responsive Events Page */
 @media screen and (max-width: 992px) {
   .events_hero_title {
@@ -3982,6 +4025,13 @@ a.contact_card_value:hover {
 
   .event_project_images {
     grid-template-columns: 1fr;
+  }
+
+  .event_facebook_album_btn {
+    padding: 12px 20px;
+    font-size: 13px;
+    gap: 8px;
+    margin-top: 24px;
   }
 }
 
