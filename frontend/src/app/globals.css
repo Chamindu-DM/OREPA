@@ -524,7 +524,6 @@ body {
   background: linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(20, 20, 20, 0.98) 100%);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  padding: 100rem 20rem 40rem;
   transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   z-index: calc(var(--zIndex-menu) + 5);
   overflow-y: auto;
@@ -2384,9 +2383,9 @@ body {
   }
 
   .header {
-    top: 20rem;
-    left: 20rem;
-    right: 20rem;
+    top: 0;
+    left: 0;
+    right: 0;
   }
 
   .header_logo {
@@ -2422,7 +2421,6 @@ body {
     background: linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(20, 20, 20, 0.98) 100%);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    padding: 100rem 20rem 40rem;
     transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     z-index: calc(var(--zIndex-menu) + 5);
     overflow-y: auto;
