@@ -41,11 +41,11 @@ const historyItems = [
     },
     {
         num: '03',
-        title: ["Next Generation of Leaders"],
+        title: ["TesserX"],
         texts: [
             [
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+                "Old Royalists' Engineering Professionals Association (OREPA), joined forces with Royal College Computer Society (RCCS), to organize TesserX, Sri Lanka's largest school-level ideathon. Conducted as a major sub-project under the flagship event Axis with the financial support of OREPA, the grand-finale of TesserX was held on 2nd September at Royal College MAS Arena and RCU Skills Centre.",
+                "The project unfolded over a five-month timeline starting with opening registrations on 1st May, followed by an extensive workshop series. TesserX saw the participation of around 150 competitors from all around Sri Lanka. The team from Royal College emerged victorious, whereas the team of St. Joseph's Girls' School became the runners-up and the team of Kekirawa Central College became the second runners-up.",
             ],
         ],
         images: [

@@ -67,7 +67,7 @@ export default function AboutUs() {
                     </span>
                     <span className="sr_only">About</span>
                 </h2>
-                <div className="jms_info">
+                <div className="jms_info" style={{ width: '100%' }}>
                     <div className="who_we_are_container">
                         <div className="who_we_are_content">
                             <p className="jms_info_ttl">Who We Are</p>

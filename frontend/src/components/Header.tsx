@@ -49,6 +49,13 @@ export default function Header() {
 
     return (
         <header className="header">
+            <div className="progressive-blur-container">
+                <div className="blur-filter"></div>
+                <div className="blur-filter"></div>
+                <div className="blur-filter"></div>
+                <div className="blur-filter"></div>
+                <div className="gradient"></div>
+            </div>
             <div className="header_inner">
                 <p className="header_logo">
                     <Link href="/">
