@@ -4,12 +4,12 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "https://orepa.vercel.app"),
   title: "Old Royalists' Engineering Professionals' Association (OREPA)",
-  description: "The unified platform for Royal College alumni in the engineering and technological sectors. Bridging the legacy of Reid Avenue with modern industry.",
+  description: "The home of engineers who once walked the halls of Royal College, Colombo 7",
   openGraph: {
     locale: "en_US",
     type: "website",
     title: "Old Royalists' Engineering Professionals' Association (OREPA)",
-    description: "The unified platform for Royal College alumni in the engineering and technological sectors.",
+    description: "The home of engineers who once walked the halls of Royal College, Colombo 7",
     images: [
       {
         url: "/images/hero.png",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Old Royalists' Engineering Professionals' Association (OREPA)",
-    description: "The unified platform for Royal College alumni in the engineering and technological sectors.",
+    description: "The home of engineers who once walked the halls of Royal College, Colombo 7",
     images: ["/images/hero.png"],
   },
   icons: {
