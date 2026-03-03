@@ -75,7 +75,7 @@ services:
     # Environment variables
     environment:
       - NODE_ENV=development                 # Enable development mode features
-      - NEXT_PUBLIC_API_URL=http://localhost:5001/api  # Backend API endpoint
+      - NEXT_PUBLIC_API_URL=https://orepa.lk/api  # Backend API endpoint
       - WATCHPACK_POLLING=true               # Enable polling for file changes (needed in some environments)
 
     # Dependency management
@@ -126,7 +126,7 @@ services:
     container_name: orepa-backend           # Friendly container name
 
     # Port mapping: host:container
-    # Access the backend API at http://localhost:5001
+    # Access the backend API at https://orepa.lk/api
     ports:
       - "5001:5000"
 
