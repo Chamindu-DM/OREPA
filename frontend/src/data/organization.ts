@@ -65,8 +65,8 @@ export const pillarsData = [
         titleLine2: '& Marketing',
         description: 'Information Management & Marketing acts as the guardian of OREPA\'s data, and digital presence. This pillar maintains organized records, and systems so that information is accurate, accessible, and secure for the Executive Board and project teams. The team ensures that communication channels such as websites, newsletters, and other online media are consistent with OREPA\'s identity. By managing both information flow and visibility, this pillar helps the entire organization operate efficiently and look professional to the outside world.',
         coDirectors: [
-            { name: 'Chamindu Dissanayake', title: 'Co-director', image: '/images/EB Portraits/Chamindu Dissanayake - Co-directors of Information Management & Marketing.jpg' },
-            { name: 'Chehara Amarasekara', title: 'Co-director', image: '/images/EB Portraits/Chehara Amarasekara - Co-directors of Information Management & Marketing.jpg' }
+            { name: 'Chamindu Dissanayake', title: 'Co-director', image: '/images/EB Portraits/Chamindu Dissanayake - Co-directors of Information Management_Marketing.jpg' },
+            { name: 'Chehara Amarasekara', title: 'Co-director', image: '/images/EB Portraits/Chehara Amarasekara - Co-directors of Information Management_Marketing.jpg' }
         ]
     },
     {
