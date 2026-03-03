@@ -25,3 +25,6 @@ docker-compose.override.yml
 
 # Misc
 *.log
+
+# Uploaded files (PDFs, cover images, etc.)
+backend/uploads/

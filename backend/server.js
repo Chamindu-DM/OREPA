@@ -43,6 +43,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const path = require('path');
 const compression = require('compression');
 const cookieParser = require('cookie-parser');
 
@@ -242,6 +243,10 @@ const adminAuthRoutes = require('./routes/admin/auth');
 const adminUsersRoutes = require('./routes/admin/users');
 const memberManagementRoutes = require('./routes/admin/member-management');
 const analyticsRoutes = require('./routes/admin/analytics');
+const adminNewsletterRoutes = require('./routes/admin/newsletters');
+
+// Public routes
+const publicNewsletterRoutes = require('./routes/newsletters');
 
 // ============================================================================
 // MOUNT ROUTE HANDLERS
@@ -261,6 +266,15 @@ app.use('/api/admin/member-management', memberManagementRoutes);
 
 // Analytics and audit log routes
 app.use('/api/admin/analytics', analyticsRoutes);
+
+// Admin newsletter management routes
+app.use('/api/admin/newsletters', adminNewsletterRoutes);
+
+// Public newsletter routes
+app.use('/api/newsletters', publicNewsletterRoutes);
+
+// Static file serving for uploads
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // ============================================================================
 // ERROR HANDLING MIDDLEWARE

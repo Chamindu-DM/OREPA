@@ -616,6 +616,18 @@ export default function UserManagement() {
                     </h1>
                 </div>
 
+                {/* Admin nav links */}
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '24px' }}>
+                    <div style={{ flex: 1 }} />
+                    <button onClick={() => router.push('/admin/newsletters')} style={{
+                        padding: '8px 18px', background: 'transparent', color: '#fff', border: '1px solid #fff',
+                        cursor: 'pointer', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.1em',
+                        transition: 'all 0.3s ease',
+                    }}>
+                        Newsletters →
+                    </button>
+                </div>
+
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '16px' }}>
                     <div style={{ display: 'flex', gap: '10px' }}>
                         <button

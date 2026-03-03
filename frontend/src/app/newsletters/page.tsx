@@ -6,6 +6,7 @@ import Header from '@/components/Header';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import useLenis from '@/hooks/useLenis';
+import { getApiUrl, API_CONFIG } from '@/config/api';
 
 // Dynamically import HTMLFlipBook to avoid SSR issues
 const HTMLFlipBook = dynamic(() => import('react-pageflip').then(mod => mod.default), {
@@ -13,12 +14,28 @@ const HTMLFlipBook = dynamic(() => import('react-pageflip').then(mod => mod.defa
     loading: () => <div className="flipbook-loading"><div className="flipbook-spinner"></div></div>
 });
 
+const getMediaUrl = (url: string | null) => {
+    if (!url) return '';
+    if (url.startsWith('/uploads/')) {
+        // If we are developing locally, force the local backend URL
+        // because the Next.js dev server might not have been restarted to pick up .env.local
+        if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+            return `http://localhost:5001${url}`;
+        }
+
+        const baseUrl = API_CONFIG.BASE_URL || 'http://localhost:5001/api';
+        return baseUrl.replace(/\/api\/?$/, '') + url;
+    }
+    return url;
+};
+
 interface Newsletter {
-    id: number;
+    id: string | number;
     title: string;
     date: string;
     pdfUrl: string;
-    coverImage: string;
+    coverImage: string | null;
+    description?: string | null;
 }
 
 // Newsletters data - sorted newest to oldest
@@ -450,6 +467,28 @@ export default function NewslettersPage() {
     useLenis();
     const [animationLoaded, setAnimationLoaded] = useState(false);
     const [selectedNewsletter, setSelectedNewsletter] = useState<Newsletter | null>(null);
+    const [newsletters, setNewsletters] = useState<Newsletter[]>(newslettersData);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchNewsletters = async () => {
+            try {
+                const response = await fetch(getApiUrl('/newsletters'));
+                const data = await response.json();
+                if (data.success) {
+                    setNewsletters([...data.newsletters, ...newslettersData]);
+                } else {
+                    setNewsletters(newslettersData);
+                }
+            } catch (error) {
+                console.error("Failed to fetch newsletters:", error);
+                setNewsletters(newslettersData);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchNewsletters();
+    }, []);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -496,7 +535,11 @@ export default function NewslettersPage() {
 
                 <section className="newsletters-grid-section">
                     <div className="newsletters-grid">
-                        {newslettersData.map((newsletter) => (
+                        {isLoading ? (
+                            <div className="newsletters-loading">
+                                <p style={{ textAlign: 'center', width: '100%', padding: '40px' }}>Loading newsletters...</p>
+                            </div>
+                        ) : newsletters.map((newsletter) => (
                             <article
                                 key={newsletter.id}
                                 className="newsletter-card"
@@ -505,7 +548,7 @@ export default function NewslettersPage() {
                                 <div className="newsletter-card-cover">
                                     {newsletter.coverImage ? (
                                         <img
-                                            src={newsletter.coverImage}
+                                            src={getMediaUrl(newsletter.coverImage)}
                                             alt={newsletter.title}
                                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                         />
@@ -519,6 +562,11 @@ export default function NewslettersPage() {
                                 <div className="newsletter-card-info">
                                     <h3 className="newsletter-card-title">{newsletter.title}</h3>
                                     <p className="newsletter-card-date">{newsletter.date}</p>
+                                    {newsletter.description && (
+                                        <p className="newsletter-card-desc" style={{ fontSize: '13px', color: '#666', marginTop: '8px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                            {newsletter.description}
+                                        </p>
+                                    )}
                                     <button className="newsletter-read-btn">
                                         Read Newsletter
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -530,7 +578,7 @@ export default function NewslettersPage() {
                         ))}
                     </div>
 
-                    {newslettersData.length === 0 && (
+                    {!isLoading && newsletters.length === 0 && (
                         <div className="newsletters-empty">
                             <p>No newsletters available yet. Stay tuned for updates!</p>
                         </div>
@@ -542,7 +590,7 @@ export default function NewslettersPage() {
 
             {selectedNewsletter && (
                 <FlipBookViewer
-                    pdfUrl={selectedNewsletter.pdfUrl}
+                    pdfUrl={getMediaUrl(selectedNewsletter.pdfUrl)}
                     title={selectedNewsletter.title}
                     onClose={closeNewsletter}
                 />

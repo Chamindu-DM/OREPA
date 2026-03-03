@@ -85,7 +85,30 @@ model User {
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
 
+  // Newsletters created by this user (admin)
+  newsletters     Newsletter[] @relation("NewsletterCreator")
+
   @@map("users")
+}
+
+// Newsletter Model
+model Newsletter {
+  id          String   @id @default(uuid())
+  title       String
+  date        String
+  pdfUrl      String
+  coverImage  String?
+  description String?
+  isPublished Boolean  @default(true)
+  sortOrder   Int      @default(0)
+
+  createdById String?
+  createdBy   User?    @relation("NewsletterCreator", fields: [createdById], references: [id])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("newsletters")
 }
 
 // AdminActionLog Model
