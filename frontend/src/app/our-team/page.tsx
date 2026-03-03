@@ -172,8 +172,8 @@ export default function OurTeamPage() {
 
                     {/* Co-Directors Section Grouped by Pillar */}
                     <div style={{ marginTop: '5rem' }}>
-                        <section className="js_section" style={{ marginBottom: '3rem' }}>
-                            <h2 className="pillar_title" style={{ textAlign: 'center', marginBottom: '3rem', fontSize: 'clamp(2.5rem, 5vw, 3rem)' }}>
+                        <section className="js_section" style={{ marginBottom: '3rem', display: 'flex', justifyContent: 'center' }}>
+                            <h2 className="pillar_title" style={{ textAlign: 'center', flex: 'none', marginBottom: '3rem', fontSize: 'clamp(2.5rem, 5vw, 3rem)' }}>
                                 <span className="text_wrap js_text_wrap" aria-hidden="true">
                                     {'Co-Directors'.split('').map((letter, i) => (
                                         <span key={i} className="letter">{letter === ' ' ? '\u00A0' : letter}</span>
