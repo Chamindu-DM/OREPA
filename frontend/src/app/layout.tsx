@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   openGraph: {
     locale: "en_US",
     type: "website",
+    url: "https://orepa.lk/",
+    siteName: "Old Royalists' Engineering Professionals' Association (OREPA)",
     title: "Old Royalists' Engineering Professionals' Association (OREPA)",
     description: "The home of engineers who once walked the halls of Royal College, Colombo 7",
   },
