@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "https://orepa.vercel.app"),
+  metadataBase: new URL("https://orepa.lk"),
   title: "Old Royalists' Engineering Professionals' Association (OREPA)",
   description: "The home of engineers who once walked the halls of Royal College, Colombo 7",
   openGraph: {
