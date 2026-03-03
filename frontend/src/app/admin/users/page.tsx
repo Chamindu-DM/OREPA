@@ -24,6 +24,8 @@ interface User {
     orepaSCId?: string;
     role: string;
     createdAt: string;
+    lastLogin?: string;
+    contributions?: string;
 }
 
 interface ToastState {
@@ -54,52 +56,54 @@ export default function UserManagement() {
     const [showColumnSelector, setShowColumnSelector] = useState(false);
     const [editingUser, setEditingUser] = useState<User | null>(null);
     const [deletingUser, setDeletingUser] = useState<User | null>(null);
+    const [viewingUser, setViewingUser] = useState<User | null>(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [contributionText, setContributionText] = useState('');
+    const [savingContribution, setSavingContribution] = useState(false);
 
     const titleRef = useRef<HTMLHeadingElement>(null);
     const listRef = useRef<HTMLDivElement>(null);
+    const searchMountRef = useRef(true);
 
     useEffect(() => {
-        // Check authentication
         const token = localStorage.getItem('adminToken');
         if (!token) {
             router.push('/admin/login');
             return;
         }
-
         setCurrentPage(1);
-        fetchUsers(activeTab, 1);
-
-        // Animate title
+        fetchUsers(activeTab, 1, searchQuery);
         if (titleRef.current) {
             const letters = titleRef.current.querySelectorAll('.letter');
-            gsap.to(letters, {
-                y: 0,
-                opacity: 1,
-                stagger: 0.05,
-                ease: 'power2.out',
-                duration: 0.8,
-                delay: 0.2
-            });
+            gsap.to(letters, { y: 0, opacity: 1, stagger: 0.05, ease: 'power2.out', duration: 0.8, delay: 0.2 });
         }
     }, [activeTab, router]);
+
+    // Search debounce — skip firing on mount since activeTab effect handles initial load
+    useEffect(() => {
+        if (searchMountRef.current) { searchMountRef.current = false; return; }
+        const timer = setTimeout(() => {
+            setCurrentPage(1);
+            fetchUsers(activeTab, 1, searchQuery);
+        }, 350);
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
 
     const showToast = (message: string, type: 'success' | 'error' | 'info') => {
         setToast({ show: true, message, type });
     };
 
-    const fetchUsers = async (tab: 'pending' | 'members', page: number) => {
+    const fetchUsers = async (tab: 'pending' | 'members', page: number, search: string = '') => {
         setIsLoading(true);
         setError('');
         try {
             const token = localStorage.getItem('adminToken');
-            const endpoint = tab === 'pending'
-                ? `/admin/member-management/pending?page=${page}&limit=${itemsPerPage}`
-                : `/admin/member-management/members?page=${page}&limit=${itemsPerPage}`;
+            const status = tab === 'pending' ? 'PENDING' : 'APPROVED';
+            const searchParam = search ? `&search=${encodeURIComponent(search)}` : '';
+            const endpoint = `/admin/users?status=${status}&page=${page}&limit=${itemsPerPage}${searchParam}`;
 
             const response = await fetch(getApiUrl(endpoint), {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                headers: { 'Authorization': `Bearer ${token}` }
             });
 
             if (response.status === 401) {
@@ -111,38 +115,24 @@ export default function UserManagement() {
             const data = await response.json();
 
             if (!response.ok) {
-                // Remove setting page error, maybe just show toast?
-                // Currently code sets error state. Let's keep error state for page-level errors
-                // But for transient errors use toast?
-                // The user's request focused on toast replacement for ALERT.
-                // Page load errors are fine inline.
                 setError(data.message || 'Failed to fetch users');
                 setIsLoading(false);
                 return;
             }
 
-            setUsers(data.data?.users || data.data?.members || []);
+            setUsers(data.data?.users || []);
 
             if (data.data?.pagination) {
                 setTotalPages(data.data.pagination.totalPages);
                 setCurrentPage(data.data.pagination.currentPage);
             }
 
-            // Animate list items entrance
             if (listRef.current) {
                 gsap.fromTo(listRef.current.children,
                     { opacity: 0, y: 20 },
-                    {
-                        opacity: 1,
-                        y: 0,
-                        stagger: 0.1,
-                        duration: 0.5,
-                        ease: 'power2.out',
-                        clearProps: 'all'
-                    }
+                    { opacity: 1, y: 0, stagger: 0.1, duration: 0.5, ease: 'power2.out', clearProps: 'all' }
                 );
             }
-
         } catch (err: any) {
             setError(err.message || 'Error fetching users');
         } finally {
@@ -153,7 +143,7 @@ export default function UserManagement() {
     const handlePageChange = (newPage: number) => {
         if (newPage >= 1 && newPage <= totalPages) {
             setCurrentPage(newPage);
-            fetchUsers(activeTab, newPage);
+            fetchUsers(activeTab, newPage, searchQuery);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     };
@@ -178,12 +168,8 @@ export default function UserManagement() {
                 return;
             }
 
-            // Refresh list
-            fetchUsers(activeTab, currentPage);
-
-            // Show success message
+            fetchUsers(activeTab, currentPage, searchQuery);
             showToast(`User ${action}d successfully`, 'success');
-
         } catch (err: any) {
             showToast(err.message || `Error: could not ${action} user`, 'error');
         } finally {
@@ -215,15 +201,9 @@ export default function UserManagement() {
                 return;
             }
 
-            // Refresh list
-            fetchUsers(activeTab, currentPage);
-
-            // Show success message
+            fetchUsers(activeTab, currentPage, searchQuery);
             showToast(`Users ${action}d successfully`, 'success');
-
-            // Clear selection
             setSelectedUsers([]);
-
         } catch (err: any) {
             showToast(err.message || `Error: could not ${action} users`, 'error');
         } finally {
@@ -271,7 +251,7 @@ export default function UserManagement() {
 
             showToast('User deleted successfully', 'success');
             setDeletingUser(null);
-            fetchUsers(activeTab, currentPage);
+            fetchUsers(activeTab, currentPage, searchQuery);
         } catch (err: any) {
             showToast(err.message, 'error');
         } finally {
@@ -302,11 +282,35 @@ export default function UserManagement() {
 
             showToast('User updated successfully', 'success');
             setEditingUser(null);
-            fetchUsers(activeTab, currentPage);
+            fetchUsers(activeTab, currentPage, searchQuery);
         } catch (err: any) {
             showToast(err.message, 'error');
         } finally {
             setActionLoading(null);
+        }
+    };
+
+    const handleSaveContribution = async () => {
+        if (!viewingUser) return;
+        setSavingContribution(true);
+        try {
+            const token = localStorage.getItem('adminToken');
+            const response = await fetch(getApiUrl(`/admin/users/${viewingUser.id}`), {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contributions: contributionText })
+            });
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.message || 'Failed to save contributions');
+            }
+            showToast('Contributions saved successfully', 'success');
+            setViewingUser({ ...viewingUser, contributions: contributionText });
+            setUsers(users.map(u => u.id === viewingUser.id ? { ...u, contributions: contributionText } : u));
+        } catch (err: any) {
+            showToast(err.message, 'error');
+        } finally {
+            setSavingContribution(false);
         }
     };
 
@@ -353,7 +357,7 @@ export default function UserManagement() {
                                     <input
                                         type="text"
                                         value={editingUser.firstName}
-                                        onChange={(e) => setEditingUser({...editingUser, firstName: e.target.value})}
+                                        onChange={(e) => setEditingUser({ ...editingUser, firstName: e.target.value })}
                                         style={{ width: '100%', background: '#222', border: '1px solid #444', color: '#fff', padding: '8px' }}
                                     />
                                 </div>
@@ -362,7 +366,7 @@ export default function UserManagement() {
                                     <input
                                         type="text"
                                         value={editingUser.lastName}
-                                        onChange={(e) => setEditingUser({...editingUser, lastName: e.target.value})}
+                                        onChange={(e) => setEditingUser({ ...editingUser, lastName: e.target.value })}
                                         style={{ width: '100%', background: '#222', border: '1px solid #444', color: '#fff', padding: '8px' }}
                                     />
                                 </div>
@@ -373,7 +377,7 @@ export default function UserManagement() {
                                 <input
                                     type="text"
                                     value={editingUser.university}
-                                    onChange={(e) => setEditingUser({...editingUser, university: e.target.value})}
+                                    onChange={(e) => setEditingUser({ ...editingUser, university: e.target.value })}
                                     style={{ width: '100%', background: '#222', border: '1px solid #444', color: '#fff', padding: '8px' }}
                                 />
                             </div>
@@ -384,7 +388,7 @@ export default function UserManagement() {
                                     <input
                                         type="number"
                                         value={editingUser.batch}
-                                        onChange={(e) => setEditingUser({...editingUser, batch: parseInt(e.target.value) || 0})}
+                                        onChange={(e) => setEditingUser({ ...editingUser, batch: parseInt(e.target.value) || 0 })}
                                         style={{ width: '100%', background: '#222', border: '1px solid #444', color: '#fff', padding: '8px' }}
                                     />
                                 </div>
@@ -393,7 +397,7 @@ export default function UserManagement() {
                                     <input
                                         type="text"
                                         value={editingUser.engineeringField}
-                                        onChange={(e) => setEditingUser({...editingUser, engineeringField: e.target.value})}
+                                        onChange={(e) => setEditingUser({ ...editingUser, engineeringField: e.target.value })}
                                         style={{ width: '100%', background: '#222', border: '1px solid #444', color: '#fff', padding: '8px' }}
                                     />
                                 </div>
@@ -404,7 +408,7 @@ export default function UserManagement() {
                                 <input
                                     type="text"
                                     value={editingUser.orepaSCId || ''}
-                                    onChange={(e) => setEditingUser({...editingUser, orepaSCId: e.target.value})}
+                                    onChange={(e) => setEditingUser({ ...editingUser, orepaSCId: e.target.value })}
                                     style={{ width: '100%', background: '#222', border: '1px solid #444', color: '#fff', padding: '8px' }}
                                 />
                             </div>
@@ -433,44 +437,161 @@ export default function UserManagement() {
             {/* Delete User Confirmation Modal */}
             {deletingUser && (
                 <div style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    backgroundColor: 'rgba(0,0,0,0.8)',
-                    zIndex: 1000,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
+                    position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+                    backgroundColor: 'rgba(0,0,0,0.8)', zIndex: 1000,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}>
-                    <div style={{
-                        background: '#111',
-                        border: '1px solid #f00',
-                        padding: '30px',
-                        width: '100%',
-                        maxWidth: '400px',
-                        textAlign: 'center'
-                    }}>
+                    <div style={{ background: '#111', border: '1px solid #f00', padding: '30px', width: '100%', maxWidth: '400px', textAlign: 'center' }}>
                         <h2 style={{ color: '#f00', marginBottom: '10px' }}>Delete User?</h2>
                         <p style={{ color: '#fff', marginBottom: '20px' }}>
-                            Are you sure you want to delete user <strong>{deletingUser.firstName} {deletingUser.lastName}</strong> ({deletingUser.email})?
-                            This action cannot be undone.
+                            Are you sure you want to delete <strong>{deletingUser.firstName} {deletingUser.lastName}</strong> ({deletingUser.email})? This action cannot be undone.
                         </p>
                         <div style={{ display: 'flex', justifyContent: 'center', gap: '15px' }}>
-                            <button
-                                onClick={() => setDeletingUser(null)}
-                                style={{ padding: '10px 20px', background: 'transparent', border: '1px solid #fff', color: '#fff', cursor: 'pointer' }}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handleDeleteUser}
-                                disabled={actionLoading === deletingUser.id}
-                                style={{ padding: '10px 20px', background: '#f00', border: 'none', color: '#fff', cursor: 'pointer' }}
-                            >
+                            <button onClick={() => setDeletingUser(null)} style={{ padding: '10px 20px', background: 'transparent', border: '1px solid #fff', color: '#fff', cursor: 'pointer' }}>Cancel</button>
+                            <button onClick={handleDeleteUser} disabled={actionLoading === deletingUser.id} style={{ padding: '10px 20px', background: '#f00', border: 'none', color: '#fff', cursor: 'pointer' }}>
                                 {actionLoading === deletingUser.id ? 'Deleting...' : 'Delete User'}
                             </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* User Details Modal */}
+            {viewingUser && (
+                <div style={{
+                    position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+                    backgroundColor: 'rgba(0,0,0,0.88)', zIndex: 1000,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px',
+                    boxSizing: 'border-box'
+                }} onClick={() => setViewingUser(null)}>
+                    <div style={{
+                        background: '#111', border: '1px solid #2a2a2a',
+                        width: '100%', maxWidth: '680px', maxHeight: '90vh',
+                        overflowY: 'auto', position: 'relative'
+                    }} onClick={e => e.stopPropagation()}>
+
+                        {/* Modal Header */}
+                        <div style={{
+                            padding: '22px 28px', borderBottom: '1px solid #1e1e1e',
+                            display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
+                            position: 'sticky', top: 0, background: '#111', zIndex: 10
+                        }}>
+                            <div>
+                                <h2 style={{ margin: 0, color: '#fff', fontSize: '19px', fontWeight: 500 }}>{viewingUser.nameWithInitials}</h2>
+                                <p style={{ margin: '4px 0 0', color: '#666', fontSize: '13px' }}>{viewingUser.email}</p>
+                            </div>
+                            <button onClick={() => setViewingUser(null)} style={{
+                                background: 'transparent', border: '1px solid #333', color: '#888',
+                                cursor: 'pointer', padding: '5px 11px', fontSize: '20px', lineHeight: 1, marginLeft: '12px'
+                            }}>×</button>
+                        </div>
+
+                        <div style={{ padding: '28px' }}>
+                            {/* Status / Role Badges */}
+                            <div style={{ display: 'flex', gap: '8px', marginBottom: '26px', flexWrap: 'wrap' }}>
+                                <span style={{
+                                    padding: '4px 12px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.1em',
+                                    background: viewingUser.status === 'APPROVED' ? 'rgba(46,204,113,0.15)' :
+                                        viewingUser.status === 'PENDING' ? 'rgba(241,196,15,0.15)' :
+                                            viewingUser.status === 'REJECTED' ? 'rgba(231,76,60,0.15)' : 'rgba(255,255,255,0.08)',
+                                    color: viewingUser.status === 'APPROVED' ? '#2ecc71' :
+                                        viewingUser.status === 'PENDING' ? '#f1c40f' :
+                                            viewingUser.status === 'REJECTED' ? '#e74c3c' : '#aaa',
+                                    border: `1px solid ${viewingUser.status === 'APPROVED' ? 'rgba(46,204,113,0.3)' : viewingUser.status === 'PENDING' ? 'rgba(241,196,15,0.3)' : viewingUser.status === 'REJECTED' ? 'rgba(231,76,60,0.3)' : '#333'}`
+                                }}>{viewingUser.status}</span>
+                                <span style={{
+                                    padding: '4px 12px', fontSize: '11px', textTransform: 'uppercase',
+                                    letterSpacing: '0.1em', background: 'rgba(255,255,255,0.05)',
+                                    color: '#bbb', border: '1px solid #2a2a2a'
+                                }}>{viewingUser.role}</span>
+                            </div>
+
+                            {/* Personal Section */}
+                            <div style={{ marginBottom: '26px' }}>
+                                <h3 style={{ margin: '0 0 14px', color: '#555', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.12em', borderBottom: '1px solid #1e1e1e', paddingBottom: '8px' }}>Personal</h3>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+                                    {([
+                                        ['First Name', viewingUser.firstName],
+                                        ['Last Name', viewingUser.lastName],
+                                        ['Name with Initials', viewingUser.nameWithInitials],
+                                        ['Email', viewingUser.email],
+                                    ] as [string, string][]).map(([label, value]) => (
+                                        <div key={label}>
+                                            <p style={{ margin: 0, fontSize: '10px', color: '#555', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</p>
+                                            <p style={{ margin: '4px 0 0', fontSize: '14px', color: '#ccc', wordBreak: 'break-all' }}>{value || '—'}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Academic Section */}
+                            <div style={{ marginBottom: '26px' }}>
+                                <h3 style={{ margin: '0 0 14px', color: '#555', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.12em', borderBottom: '1px solid #1e1e1e', paddingBottom: '8px' }}>Academic & Professional</h3>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+                                    {([
+                                        ['Batch', String(viewingUser.batch ?? '—')],
+                                        ['Engineering Field', viewingUser.engineeringField],
+                                        ['University', viewingUser.university],
+                                        ['OREPA SC ID', viewingUser.orepaSCId || '—'],
+                                    ] as [string, string][]).map(([label, value]) => (
+                                        <div key={label}>
+                                            <p style={{ margin: 0, fontSize: '10px', color: '#555', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</p>
+                                            <p style={{ margin: '4px 0 0', fontSize: '14px', color: '#ccc' }}>{value || '—'}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Account Section */}
+                            <div style={{ marginBottom: '26px' }}>
+                                <h3 style={{ margin: '0 0 14px', color: '#555', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.12em', borderBottom: '1px solid #1e1e1e', paddingBottom: '8px' }}>Account</h3>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+                                    {([
+                                        ['Member Since', viewingUser.createdAt ? new Date(viewingUser.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'],
+                                        ['Last Login', viewingUser.lastLogin ? new Date(viewingUser.lastLogin).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Never'],
+                                    ] as [string, string][]).map(([label, value]) => (
+                                        <div key={label}>
+                                            <p style={{ margin: 0, fontSize: '10px', color: '#555', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</p>
+                                            <p style={{ margin: '4px 0 0', fontSize: '14px', color: '#ccc' }}>{value}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Contributions Section */}
+                            <div>
+                                <h3 style={{ margin: '0 0 6px', color: '#555', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.12em', borderBottom: '1px solid #1e1e1e', paddingBottom: '8px' }}>Contributions</h3>
+                                <p style={{ margin: '0 0 10px', fontSize: '12px', color: '#444' }}>Record notable contributions, achievements, or activities for this member.</p>
+                                <textarea
+                                    value={contributionText}
+                                    onChange={(e) => setContributionText(e.target.value)}
+                                    placeholder="e.g. Led the 2024 Annual Gala committee, Keynote speaker at Tech Symposium..."
+                                    rows={5}
+                                    style={{
+                                        width: '100%', background: '#0d0d0d', border: '1px solid #2a2a2a',
+                                        color: '#ddd', padding: '12px', fontSize: '14px',
+                                        resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.6,
+                                        boxSizing: 'border-box', outline: 'none',
+                                        transition: 'border-color 0.2s'
+                                    }}
+                                    onFocus={e => e.target.style.borderColor = '#444'}
+                                    onBlur={e => e.target.style.borderColor = '#2a2a2a'}
+                                />
+                                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
+                                    <button
+                                        onClick={handleSaveContribution}
+                                        disabled={savingContribution}
+                                        style={{
+                                            padding: '9px 22px', background: '#fff', border: 'none',
+                                            color: '#000', cursor: savingContribution ? 'not-allowed' : 'pointer',
+                                            fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.1em',
+                                            opacity: savingContribution ? 0.6 : 1, transition: 'opacity 0.2s'
+                                        }}
+                                    >
+                                        {savingContribution ? 'Saving...' : 'Save Contributions'}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -480,7 +601,7 @@ export default function UserManagement() {
 
                 <div className="jms_ttl_wrap" style={{ justifyContent: 'center', marginBottom: '40px' }}>
                     <h1 className="jms_ttl" ref={titleRef} style={{ fontSize: '3rem' }}>
-                         <span className="text_wrap" style={{ display: 'flex', overflow: 'hidden' }} aria-hidden="true">
+                        <span className="text_wrap" style={{ display: 'flex', overflow: 'hidden' }} aria-hidden="true">
                             {'Management'.split('').map((letter, i) => (
                                 <span key={i} className="letter" style={{
                                     display: 'inline-block',
@@ -495,7 +616,7 @@ export default function UserManagement() {
                     </h1>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '16px' }}>
                     <div style={{ display: 'flex', gap: '10px' }}>
                         <button
                             onClick={() => setActiveTab('pending')}
@@ -503,12 +624,9 @@ export default function UserManagement() {
                                 padding: '10px 20px',
                                 background: activeTab === 'pending' ? '#fff' : 'transparent',
                                 color: activeTab === 'pending' ? '#000' : '#fff',
-                                border: '1px solid #fff',
-                                cursor: 'pointer',
-                                textTransform: 'uppercase',
-                                letterSpacing: '0.1em',
-                                transition: 'all 0.3s ease',
-                                fontSize: '13px'
+                                border: '1px solid #fff', cursor: 'pointer',
+                                textTransform: 'uppercase', letterSpacing: '0.1em',
+                                transition: 'all 0.3s ease', fontSize: '13px'
                             }}
                         >
                             Pending
@@ -519,12 +637,9 @@ export default function UserManagement() {
                                 padding: '10px 20px',
                                 background: activeTab === 'members' ? '#fff' : 'transparent',
                                 color: activeTab === 'members' ? '#000' : '#fff',
-                                border: '1px solid #fff',
-                                cursor: 'pointer',
-                                textTransform: 'uppercase',
-                                letterSpacing: '0.1em',
-                                transition: 'all 0.3s ease',
-                                fontSize: '13px'
+                                border: '1px solid #fff', cursor: 'pointer',
+                                textTransform: 'uppercase', letterSpacing: '0.1em',
+                                transition: 'all 0.3s ease', fontSize: '13px'
                             }}
                         >
                             Members
@@ -595,6 +710,40 @@ export default function UserManagement() {
                             </svg>
                         </button>
                     </div>
+                </div>
+
+                {/* Search Bar */}
+                <div style={{ marginBottom: '16px' }}>
+                    <div style={{ position: 'relative', maxWidth: '460px' }}>
+                        <svg style={{ position: 'absolute', left: '11px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}
+                            width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2">
+                            <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+                        </svg>
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder={`Search ${activeTab === 'pending' ? 'pending registrations' : 'members'} by name or email...`}
+                            style={{
+                                width: '100%', background: 'rgba(255,255,255,0.04)',
+                                border: '1px solid #2a2a2a', color: '#fff',
+                                padding: '9px 32px 9px 34px', fontSize: '13px',
+                                outline: 'none', boxSizing: 'border-box'
+                            }}
+                        />
+                        {searchQuery && (
+                            <button onClick={() => setSearchQuery('')} style={{
+                                position: 'absolute', right: '9px', top: '50%', transform: 'translateY(-50%)',
+                                background: 'transparent', border: 'none', color: '#666',
+                                cursor: 'pointer', fontSize: '18px', lineHeight: 1, padding: 0
+                            }}>×</button>
+                        )}
+                    </div>
+                    {searchQuery && !isLoading && (
+                        <p style={{ margin: '5px 0 0', fontSize: '12px', color: '#555' }}>
+                            {users.length} result{users.length !== 1 ? 's' : ''} for &ldquo;{searchQuery}&rdquo;
+                        </p>
+                    )}
                 </div>
 
                 {activeTab === 'pending' && selectedUsers.length > 0 && (
@@ -697,6 +846,7 @@ export default function UserManagement() {
                                             <p style={{ margin: '5px 0 0', fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>{user.email}</p>
                                         </div>
                                         <div style={{ color: '#aaa', fontSize: '13px' }}>{user.university} - {user.engineeringField}</div>
+                                        <button onClick={() => { setViewingUser(user); setContributionText(user.contributions || ''); }} style={{ background: 'transparent', border: '1px solid #333', color: '#aaa', cursor: 'pointer', padding: '5px 10px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.08em', flexShrink: 0 }} title="View Details">View</button>
 
                                         {activeTab === 'pending' && (
                                             <div style={{ display: 'flex', gap: '10px' }}>
@@ -774,11 +924,11 @@ export default function UserManagement() {
                                                                 borderRadius: '4px',
                                                                 fontSize: '11px',
                                                                 backgroundColor: user.status === 'APPROVED' ? 'rgba(46, 204, 113, 0.2)' :
-                                                                                user.status === 'PENDING' ? 'rgba(241, 196, 15, 0.2)' :
-                                                                                user.status === 'REJECTED' ? 'rgba(231, 76, 60, 0.2)' : 'rgba(255,255,255,0.1)',
+                                                                    user.status === 'PENDING' ? 'rgba(241, 196, 15, 0.2)' :
+                                                                        user.status === 'REJECTED' ? 'rgba(231, 76, 60, 0.2)' : 'rgba(255,255,255,0.1)',
                                                                 color: user.status === 'APPROVED' ? '#2ecc71' :
-                                                                       user.status === 'PENDING' ? '#f1c40f' :
-                                                                       user.status === 'REJECTED' ? '#e74c3c' : '#aaa'
+                                                                    user.status === 'PENDING' ? '#f1c40f' :
+                                                                        user.status === 'REJECTED' ? '#e74c3c' : '#aaa'
                                                             }}>
                                                                 {user.status}
                                                             </span>
@@ -793,6 +943,9 @@ export default function UserManagement() {
                                                         </div>
                                                     ) : (
                                                         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                                                            <button onClick={() => { setViewingUser(user); setContributionText(user.contributions || ''); }} style={{ background: 'transparent', border: 'none', color: '#aaa', cursor: 'pointer' }} title="View Details">
+                                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                                            </button>
                                                             <button onClick={() => setEditingUser(user)} style={{ background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer' }} title="Edit">
                                                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -822,7 +975,7 @@ export default function UserManagement() {
                                         No users found.
                                     </div>
                                 ) : users.map(user => (
-                                    <div key={user.id} style={{
+                                    <div key={user.id} onClick={() => { setViewingUser(user); setContributionText(user.contributions || ''); }} style={{
                                         background: 'rgba(255, 255, 255, 0.05)',
                                         border: selectedUsers.includes(user.id) ? '1px solid #fff' : '1px solid rgba(255, 255, 255, 0.1)',
                                         padding: '20px',
@@ -830,10 +983,11 @@ export default function UserManagement() {
                                         flexDirection: 'column',
                                         gap: '10px',
                                         transition: 'all 0.3s ease',
-                                        position: 'relative'
+                                        position: 'relative',
+                                        cursor: 'pointer'
                                     }}>
                                         {activeTab === 'pending' && (
-                                            <div style={{ position: 'absolute', top: '10px', right: '10px' }}>
+                                            <div style={{ position: 'absolute', top: '10px', right: '10px' }} onClick={e => e.stopPropagation()}>
                                                 <input
                                                     type="checkbox"
                                                     checked={selectedUsers.includes(user.id)}
@@ -856,7 +1010,7 @@ export default function UserManagement() {
                                         </div>
 
                                         {activeTab === 'pending' && (
-                                            <div style={{ display: 'flex', gap: '10px', marginTop: 'auto', paddingTop: '15px' }}>
+                                            <div style={{ display: 'flex', gap: '10px', marginTop: 'auto', paddingTop: '15px' }} onClick={e => e.stopPropagation()}>
                                                 <button
                                                     onClick={() => handleAction(user.id, 'approve')}
                                                     disabled={actionLoading === user.id}
@@ -895,7 +1049,10 @@ export default function UserManagement() {
                                         )}
 
                                         {activeTab === 'members' && (
-                                            <div style={{ position: 'absolute', top: '10px', right: '10px', display: 'flex', gap: '5px' }}>
+                                            <div style={{ position: 'absolute', top: '10px', right: '10px', display: 'flex', gap: '5px' }} onClick={e => e.stopPropagation()}>
+                                                <button onClick={() => { setViewingUser(user); setContributionText(user.contributions || ''); }} style={{ background: 'transparent', border: 'none', color: '#aaa', cursor: 'pointer', padding: '5px' }} title="View Details">
+                                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
+                                                </button>
                                                 <button onClick={() => setEditingUser(user)} style={{ background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer', padding: '5px' }} title="Edit">
                                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -962,6 +1119,6 @@ export default function UserManagement() {
             <div style={{ marginTop: 'auto' }}>
                 <Footer />
             </div>
-        </div>
+        </div >
     );
 }

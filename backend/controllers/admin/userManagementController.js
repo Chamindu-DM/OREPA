@@ -23,8 +23,11 @@
 // ============================================================================
 
 const User = require('../../models/User');
+const { PrismaClient } = require('@prisma/client');
 const { asyncHandler } = require('../../middleware/errorHandler');
 const { logAction } = require('../../middleware/auditLog');
+
+const prisma = new PrismaClient();
 
 // ============================================================================
 // GET ALL USERS
@@ -108,10 +111,12 @@ exports.getAllUsers = asyncHandler(async (req, res) => {
         orepaSCId: true,
         batch: true,
         university: true,
+        engineeringField: true,
+        contributions: true,
         createdAt: true,
         updatedAt: true,
         lastLogin: true,
-        approvedAt: true,
+        approvalDate: true,
         approvedById: true,
         createdById: true,
         // Exclude password
@@ -530,6 +535,7 @@ exports.updateUser = asyncHandler(async (req, res) => {
     university,
     engineeringField,
     orepaSCId,
+    contributions,
     role
   } = req.body;
 
@@ -561,7 +567,8 @@ exports.updateUser = asyncHandler(async (req, res) => {
   if (batch) updateData.batch = parseInt(batch, 10);
   if (university) updateData.university = university;
   if (engineeringField) updateData.engineeringField = engineeringField;
-  if (orepaSCId) updateData.orepaSCId = orepaSCId;
+  if (orepaSCId !== undefined) updateData.orepaSCId = orepaSCId;
+  if (contributions !== undefined) updateData.contributions = contributions;
 
   // Only SUPER_ADMIN can update roles here (although there is a separate endpoint, convenient to allow here if permission matches)
   if (role && req.user.role === 'SUPER_ADMIN') {

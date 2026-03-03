@@ -50,6 +50,7 @@ model User {
   universityLevel String
   engineeringField String
   orepaSCId       String?
+  contributions   String?  // Admin-recorded contributions by this member
 
   // Authorization
   role            UserRole    @default(USER)
