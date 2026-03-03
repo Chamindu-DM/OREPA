@@ -338,17 +338,44 @@ exports.logout = asyncHandler(async (req, res) => {
  */
 exports.getProfile = asyncHandler(async (req, res) => {
   const user = await prisma.user.findUnique({
-    where: { id: req.user.id }
+    where: { id: req.user.id },
+    select: {
+      id: true,
+      email: true,
+      firstName: true,
+      lastName: true,
+      nameWithInitials: true,
+      dateOfBirth: true,
+      address: true,
+      country: true,
+      phone: true,
+      batch: true,
+      admissionNumber: true,
+      alShy: true,
+      university: true,
+      faculty: true,
+      universityLevel: true,
+      engineeringField: true,
+      orepaSCId: true,
+      role: true,
+      isAdmin: true,
+      status: true,
+      isEmailVerified: true,
+      isActive: true,
+      lastLogin: true,
+      createdAt: true,
+      updatedAt: true,
+      // contributions intentionally excluded — admin-only field
+    }
   });
 
-  if (user) {
-    delete user.password;
-    user.fullName = `${user.firstName} ${user.lastName}`;
+  if (!user) {
+    return res.status(404).json({ success: false, message: 'User not found' });
   }
 
   res.status(200).json({
     success: true,
-    user,
+    user: { ...user, fullName: `${user.firstName} ${user.lastName}` },
   });
 });
 
@@ -400,11 +427,11 @@ exports.updateProfile = asyncHandler(async (req, res) => {
 
   // Handle batch separately if passed as graduationYear
   if (req.body.graduationYear) {
-      updateData.batch = req.body.graduationYear;
+    updateData.batch = req.body.graduationYear;
   }
   // If batch is passed directly
   if (req.body.batch) {
-      updateData.batch = req.body.batch;
+    updateData.batch = req.body.batch;
   }
 
   const updatedUser = await prisma.user.update({
