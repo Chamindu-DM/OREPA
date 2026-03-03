@@ -92,7 +92,7 @@ export const pillarsData = [
         title: 'Research & Development (R&D)',
         description: 'The R&D pillar drives innovation and continuous improvement across the Student Chapter. It studies how existing processes, projects, and structures are functioning, and proposes evidence-based enhancements or new initiatives. R&D also supports long-term sustainability by documenting insights and best practices for future terms. In short, this pillar keeps OREPA evolving.',
         coDirectors: [
-            { name: 'Anjana Viduranga', title: 'Director', image: '/images/EB Portraits/Anjana Viduranga - Director of Research & Development.jpg' }
+            { name: 'Anjana Viduranga', title: 'Director', image: '/images/EB Portraits/Anjana Viduranga - Director of Research_Development.jpg' }
         ]
     },
     {
