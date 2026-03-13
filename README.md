@@ -568,6 +568,7 @@ ISC
 ## Contact
 
 **OREPA Development Team**
+- Co-Director of Information and Marketing Pillar-Term 25/26: chamindudissanayake@gmail.com
 - Email: orepastudentchapter@gmail.com
 - Website: https://orepa.lk
 
