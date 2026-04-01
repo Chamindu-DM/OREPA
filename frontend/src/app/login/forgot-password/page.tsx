@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { API_CONFIG, getApiUrl } from '@/config/api';
@@ -11,12 +10,11 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function Login() {
-    const router = useRouter();
+export default function ForgotPassword() {
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
 
     // Animation refs
     const formRef = useRef<HTMLDivElement>(null);
@@ -55,27 +53,27 @@ export default function Login() {
         e.preventDefault();
         setIsLoading(true);
         setError('');
+        setSuccess('');
 
         try {
-            const response = await fetch(getApiUrl(API_CONFIG.ENDPOINTS.AUTH.LOGIN), {
+            const response = await fetch(getApiUrl(API_CONFIG.ENDPOINTS.AUTH.FORGOT_PASSWORD), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({ email }),
             });
 
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.message || 'Login failed');
+                throw new Error(data.message || 'Failed to send reset link');
             }
 
-            // Store token/user info (implement context or local storage logic here)
-            // For now just redirect
-            router.push('/');
+            setSuccess('If an account matches that email, a password reset link has been sent. Please check your inbox.');
+            setEmail('');
         } catch (err: any) {
-            setError(err.message || 'An error occurred during login');
+            setError(err.message || 'An error occurred during the request');
         } finally {
             setIsLoading(false);
         }
@@ -88,21 +86,28 @@ export default function Login() {
             <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', paddingTop: '100px', paddingBottom: '100px' }}>
                 <div className="login_container" style={{ width: '100%', maxWidth: '400px', padding: '0 20px' }}>
 
-                    <div className="jms_ttl_wrap" style={{ justifyContent: 'center', marginBottom: '60px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '60px', textAlign: 'center' }}>
                         <h1 className="jms_ttl" ref={titleRef}>
-                            <span className="text_wrap" style={{ display: 'flex', overflow: 'hidden' }} aria-hidden="true">
-                                {'Log-in'.split('').map((letter, i) => (
-                                    <span key={i} className="letter" style={{
-                                        display: 'inline-block',
-                                        transform: 'translateY(100%)',
-                                        opacity: 0
-                                    }}>
-                                        {letter}
+                            <span className="text_wrap" style={{ display: 'flex', flexWrap: 'wrap', overflow: 'hidden', justifyContent: 'center', gap: '8px' }} aria-hidden="true">
+                                {'Recover Password'.split(' ').map((word, wIdx) => (
+                                    <span key={`word-${wIdx}`} style={{ display: 'flex' }}>
+                                        {word.split('').map((letter, i) => (
+                                            <span key={`${wIdx}-${i}`} className="letter" style={{
+                                                display: 'inline-block',
+                                                transform: 'translateY(100%)',
+                                                opacity: 0
+                                            }}>
+                                                {letter}
+                                            </span>
+                                        ))}
                                     </span>
                                 ))}
                             </span>
-                            <span className="sr_only">Log-in</span>
+                            <span className="sr_only">Recover Password</span>
                         </h1>
+                        <p style={{ marginTop: '20px', color: 'rgba(255, 255, 255, 0.7)', fontSize: '14px', margin: '20px 0 0' }}>
+                            Enter your email address to receive a password reset link.
+                        </p>
                     </div>
 
                     <div ref={formRef} style={{ opacity: 0 }}>
@@ -117,6 +122,20 @@ export default function Login() {
                                 textAlign: 'center'
                             }}>
                                 {error}
+                            </div>
+                        )}
+
+                        {success && (
+                            <div style={{
+                                padding: '15px',
+                                marginBottom: '20px',
+                                border: '1px solid rgba(100, 255, 100, 0.4)',
+                                backgroundColor: 'rgba(0, 255, 0, 0.1)',
+                                color: '#6bff6b',
+                                fontSize: '14px',
+                                textAlign: 'center'
+                            }}>
+                                {success}
                             </div>
                         )}
 
@@ -137,40 +156,6 @@ export default function Login() {
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    required
-                                    style={{
-                                        width: '100%',
-                                        background: 'transparent',
-                                        border: 'none',
-                                        borderBottom: '1px solid rgba(255, 255, 255, 0.3)',
-                                        padding: '10px 0',
-                                        color: '#fff',
-                                        fontSize: '16px',
-                                        borderRadius: 0,
-                                        outline: 'none',
-                                        transition: 'border-color 0.3s'
-                                    }}
-                                    onFocus={(e) => e.target.style.borderColor = '#fff'}
-                                    onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.3)'}
-                                />
-                            </div>
-
-                            <div className="input_group">
-                                <label htmlFor="password" className="input_label" style={{
-                                    display: 'block',
-                                    fontSize: '12px',
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '0.1em',
-                                    marginBottom: '10px',
-                                    color: 'rgba(255, 255, 255, 0.6)'
-                                }}>
-                                    Password
-                                </label>
-                                <input
-                                    id="password"
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
                                     required
                                     style={{
                                         width: '100%',
@@ -221,21 +206,15 @@ export default function Login() {
                                     }
                                 }}
                             >
-                                {isLoading ? 'Signing in...' : 'Sign In'}
+                                {isLoading ? 'Sending...' : 'Send Reset Link'}
                             </button>
 
                             <div style={{ textAlign: 'center', marginTop: '20px' }}>
                                 <p style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.6)', marginBottom: '8px' }}>
-                                    Don't have an account?
+                                    Remembered your password?
                                 </p>
-                                <Link href="/register" style={{ fontSize: '14px', color: '#fff', textDecoration: 'underline' }}>
-                                    Register here
-                                </Link>
-                            </div>
-
-                            <div style={{ textAlign: 'center' }}>
-                                <Link href="/login/forgot-password" style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.5)', textDecoration: 'none' }}>
-                                    Forgot Password?
+                                <Link href="/login" style={{ fontSize: '14px', color: '#fff', textDecoration: 'underline' }}>
+                                    Back to Login
                                 </Link>
                             </div>
                         </form>

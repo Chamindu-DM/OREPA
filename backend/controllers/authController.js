@@ -25,6 +25,7 @@ const { asyncHandler } = require('../middleware/errorHandler');
 const { PrismaClient } = require('@prisma/client');
 const crypto = require('crypto');
 const sendEmail = require('../utils/sendEmail');
+const { passwordResetEmail, registrationConfirmationEmail, adminNewRegistrationEmail } = require('../utils/emailTemplates');
 
 const prisma = new PrismaClient();
 
@@ -121,11 +122,44 @@ exports.register = asyncHandler(async (req, res) => {
   });
 
   // ==========================================================================
-  // STEP 4: TODO - Send Confirmation Email to User
+  // STEP 4: Send Confirmation Email and Notify Admins
   // ==========================================================================
 
-  // TODO: Send email to user confirming registration
-  // TODO: Notify MEMBER_ADMIN users of pending registration
+  // Send email to user confirming registration
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: 'Welcome to OREPA — Registration Received',
+      html: registrationConfirmationEmail({ firstName: user.firstName, lastName: user.lastName }),
+    });
+  } catch (emailError) {
+    console.error('Failed to send confirmation email to user:', emailError);
+  }
+
+  // Notify MEMBER_ADMIN and SUPER_ADMIN users of pending registration
+  try {
+    const adminUsers = await prisma.user.findMany({
+      where: {
+        role: {
+          in: ['MEMBER_ADMIN', 'SUPER_ADMIN'],
+        },
+        isActive: true,
+      },
+      select: { email: true }
+    });
+
+    const adminEmails = adminUsers.map((admin) => admin.email);
+
+    if (adminEmails.length > 0) {
+      await sendEmail({
+        email: adminEmails,
+        subject: 'New User Registration — Action Required',
+        html: adminNewRegistrationEmail({ firstName: user.firstName, lastName: user.lastName, email: user.email }),
+      });
+    }
+  } catch (adminEmailError) {
+    console.error('Failed to notify admins of new registration:', adminEmailError);
+  }
 
   // ==========================================================================
   // STEP 5: Send Response
@@ -470,17 +504,22 @@ exports.updateProfile = asyncHandler(async (req, res) => {
  * Access: Public
  */
 exports.forgotPassword = asyncHandler(async (req, res) => {
+  console.log('[ForgotPassword] Request received for email:', req.body.email);
+
   const user = await prisma.user.findUnique({
     where: { email: req.body.email },
   });
 
   if (!user) {
+    console.log('[ForgotPassword] No user found with email:', req.body.email);
     return res.status(404).json({
       success: false,
       message: 'User with this email was not found',
       error: 'USER_NOT_FOUND'
     });
   }
+
+  console.log('[ForgotPassword] User found:', user.id, user.email);
 
   // Get reset token
   const resetToken = crypto.randomBytes(20).toString('hex');
@@ -502,23 +541,29 @@ exports.forgotPassword = asyncHandler(async (req, res) => {
     }
   });
 
-  // Create reset URL
-  const resetUrl = `${process.env.CORS_ORIGIN.split(',')[0]}/reset-password/${resetToken}`;
+  // Create reset URL — uses /login/password-reset/:token
+  const resetUrl = `${process.env.CORS_ORIGIN.split(',')[0]}/login/password-reset/${resetToken}`;
 
-  const message = `You are receiving this email because you (or someone else) has requested the reset of a password. Please make a PUT request to: \n\n ${resetUrl}`;
+  console.log('[ForgotPassword] Attempting to send email to:', user.email);
+  console.log('[ForgotPassword] EMAIL_FROM:', process.env.EMAIL_FROM);
+  console.log('[ForgotPassword] RESEND_API_KEY set:', !!process.env.RESEND_API_KEY);
 
   try {
-    await sendEmail({
+    const result = await sendEmail({
       email: user.email,
-      subject: 'Password reset token',
-      message: message,
+      subject: 'Reset Your Password — OREPA',
+      html: passwordResetEmail({ firstName: user.firstName, resetUrl }),
     });
+
+    console.log('[ForgotPassword] Email sent successfully! Result:', result);
 
     res.status(200).json({
       success: true,
       message: 'Email sent'
     });
   } catch (err) {
+    console.error('[ForgotPassword] Email send FAILED:', err);
+
     await prisma.user.update({
       where: { id: user.id },
       data: {
