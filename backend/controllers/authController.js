@@ -504,22 +504,17 @@ exports.updateProfile = asyncHandler(async (req, res) => {
  * Access: Public
  */
 exports.forgotPassword = asyncHandler(async (req, res) => {
-  console.log('[ForgotPassword] Request received for email:', req.body.email);
-
   const user = await prisma.user.findUnique({
     where: { email: req.body.email },
   });
 
   if (!user) {
-    console.log('[ForgotPassword] No user found with email:', req.body.email);
     return res.status(404).json({
       success: false,
       message: 'User with this email was not found',
       error: 'USER_NOT_FOUND'
     });
   }
-
-  console.log('[ForgotPassword] User found:', user.id, user.email);
 
   // Get reset token
   const resetToken = crypto.randomBytes(20).toString('hex');
@@ -544,26 +539,18 @@ exports.forgotPassword = asyncHandler(async (req, res) => {
   // Create reset URL — uses /login/password-reset/:token
   const resetUrl = `${process.env.CORS_ORIGIN.split(',')[0]}/login/password-reset/${resetToken}`;
 
-  console.log('[ForgotPassword] Attempting to send email to:', user.email);
-  console.log('[ForgotPassword] EMAIL_FROM:', process.env.EMAIL_FROM);
-  console.log('[ForgotPassword] RESEND_API_KEY set:', !!process.env.RESEND_API_KEY);
-
   try {
-    const result = await sendEmail({
+    await sendEmail({
       email: user.email,
       subject: 'Reset Your Password — OREPA',
       html: passwordResetEmail({ firstName: user.firstName, resetUrl }),
     });
-
-    console.log('[ForgotPassword] Email sent successfully! Result:', result);
 
     res.status(200).json({
       success: true,
       message: 'Email sent'
     });
   } catch (err) {
-    console.error('[ForgotPassword] Email send FAILED:', err);
-
     await prisma.user.update({
       where: { id: user.id },
       data: {

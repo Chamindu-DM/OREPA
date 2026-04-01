@@ -132,6 +132,9 @@ services:
       - JWT_SECRET=${JWT_SECRET}             # JWT signing key
       - JWT_EXPIRE=${JWT_EXPIRE}             # JWT expiration time
       - CORS_ORIGIN=${CORS_ORIGIN}           # Allowed CORS origin (frontend URL)
+      - RESEND_API_KEY=${RESEND_API_KEY}     # Resend email service API key
+      - EMAIL_FROM=${EMAIL_FROM}             # Sender email address
+      - EMAIL_FROM_NAME=${EMAIL_FROM_NAME}   # Sender display name
 
     # No depends_on for database — Supabase is external and always available
 
