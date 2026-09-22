@@ -24,6 +24,13 @@ interface Newsletter {
 // Newsletters data - sorted newest to oldest
 const newslettersData: Newsletter[] = [
     {
+        id: 0,
+        title: 'OREPA Newsletter - June 2026',
+        date: 'June 2026',
+        pdfUrl: '/newsletters/OREPA_NEWSL_JUNE_2026.pdf',
+        coverImage: '/newsletters/covers/OREPA_NEWSL_JUNE_2026.jpeg'
+    },
+    {
         id: 1,
         title: 'OREPA Newsletter - January 2026',
         date: 'January 2026',
